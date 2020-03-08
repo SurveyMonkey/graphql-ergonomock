@@ -27,13 +27,11 @@
   <h3 align="center">graphql-ergonomock</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Developer-friendly automock for GraphQL
     <br />
     <a href="https://github.com/joual/graphql-ergonomock"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/joual/graphql-ergonomock">View Demo</a>
-    ·
     <a href="https://github.com/joual/graphql-ergonomock/issues">Report Bug</a>
     ·
     <a href="https://github.com/joual/graphql-ergonomock/issues">Request Feature</a>
@@ -49,9 +47,8 @@
 - [About The Project](#about-the-project)
   - [Built With](#built-with)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-- [Usage](#usage)
+  - [Usage](#usage)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -78,50 +75,25 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 
 ### Built With
 This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
-* [Laravel](https://laravel.com)
+* [Typescript](https://www.typescriptlang.org/)
+* [GraphQL](https://graphql.org)
+* [Jest](https://jestjs.io)
 
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-```sh
-npm install npm@latest -g
-```
-
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-```sh
-git clone https://github.com/your_username_/Project-Name.git
+```shell
+npm i graphql-ergonomock --save-dev
 ```
-3. Install NPM packages
-```sh
-npm install
-```
-4. Enter your API in `config.js`
-```JS
-const API_KEY = 'ENTER YOUR API';
-```
-
-
 
 <!-- USAGE EXAMPLES -->
-## Usage
+### Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+TBD
 
 
 
@@ -155,14 +127,16 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Your Name - [@your_twitter](https://twitter.com/joual) - email@example.com
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/joual/graphql-ergonomock](https://github.com/joual/graphql-ergonomock)
 
 
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
+
+TBD
 * [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
 * [Img Shields](https://shields.io)
 * [Choose an Open Source License](https://choosealicense.com)
