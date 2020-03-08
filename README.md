@@ -20,23 +20,23 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/joual/ts-lib-starter">
+  <a href="https://github.com/joual/graphql-ergonomock">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">ts-lib-starter</h3>
+  <h3 align="center">graphql-ergonomock</h3>
 
   <p align="center">
     An awesome README template to jumpstart your projects!
     <br />
-    <a href="https://github.com/joual/ts-lib-starter"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/joual/graphql-ergonomock"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/joual/ts-lib-starter">View Demo</a>
+    <a href="https://github.com/joual/graphql-ergonomock">View Demo</a>
     ·
-    <a href="https://github.com/joual/ts-lib-starter/issues">Report Bug</a>
+    <a href="https://github.com/joual/graphql-ergonomock/issues">Report Bug</a>
     ·
-    <a href="https://github.com/joual/ts-lib-starter/issues">Request Feature</a>
+    <a href="https://github.com/joual/graphql-ergonomock/issues">Request Feature</a>
   </p>
 </p>
 
@@ -128,7 +128,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/joual/ts-lib-starter/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/joual/graphql-ergonomock/issues) for a list of proposed features (and known issues).
 
 
 
@@ -181,18 +181,18 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/joual/ts-lib-starter.svg?style=flat-square
-[contributors-url]: https://github.com/joual/ts-lib-starter/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/joual/ts-lib-starter.svg?style=flat-square
-[forks-url]: https://github.com/joual/ts-lib-starter/network/members
-[stars-shield]: https://img.shields.io/github/stars/joual/ts-lib-starter.svg?style=flat-square
-[stars-url]: https://github.com/joual/ts-lib-starter/stargazers
-[issues-shield]: https://img.shields.io/github/issues/joual/ts-lib-starter.svg?style=flat-square
-[issues-url]: https://github.com/joual/ts-lib-starter/issues
-[license-shield]: https://img.shields.io/github/license/joual/ts-lib-starter.svg?style=flat-square
-[license-url]: https://github.com/joual/ts-lib-starter/blob/master/LICENSE.txt
-[circleci-shield]: https://circleci.com/gh/joual/ts-lib-starter.svg?style=shield
-[circleci-url]: https://app.circleci.com/pipelines/github/joual/ts-lib-starter
-[codecov-shield]: https://codecov.io/gh/joual/ts-lib-starter/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/joual/ts-lib-starter
+[contributors-shield]: https://img.shields.io/github/contributors/joual/graphql-ergonomock.svg?style=flat-square
+[contributors-url]: https://github.com/joual/graphql-ergonomock/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/joual/graphql-ergonomock.svg?style=flat-square
+[forks-url]: https://github.com/joual/graphql-ergonomock/network/members
+[stars-shield]: https://img.shields.io/github/stars/joual/graphql-ergonomock.svg?style=flat-square
+[stars-url]: https://github.com/joual/graphql-ergonomock/stargazers
+[issues-shield]: https://img.shields.io/github/issues/joual/graphql-ergonomock.svg?style=flat-square
+[issues-url]: https://github.com/joual/graphql-ergonomock/issues
+[license-shield]: https://img.shields.io/github/license/joual/graphql-ergonomock.svg?style=flat-square
+[license-url]: https://github.com/joual/graphql-ergonomock/blob/master/LICENSE.txt
+[circleci-shield]: https://circleci.com/gh/joual/graphql-ergonomock.svg?style=shield
+[circleci-url]: https://app.circleci.com/pipelines/github/joual/graphql-ergonomock
+[codecov-shield]: https://codecov.io/gh/joual/graphql-ergonomock/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/joual/graphql-ergonomock
 [product-screenshot]: images/screenshot.png

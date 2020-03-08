@@ -1,7 +1,7 @@
 {
-  "name": "ts-lib-starter",
+  "name": "graphql-ergonomock",
   "version": "0.0.0-development",
-  "description": "Template repository for TS libraries",
+  "description": "Automatic mocking of GraphQL operations.",
   "main": "dist/index.js",
   "author": "Joel Marcotte",
   "license": "MIT",
@@ -25,6 +25,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/joual/ts-lib-starter.git"
+    "url": "https://github.com/joual/graphql-ergonomock.git"
   }
 }
