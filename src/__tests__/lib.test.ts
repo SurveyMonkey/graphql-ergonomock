@@ -129,6 +129,34 @@ describe("Automocking", () => {
         expect(firstType.returnEnum).toBeOneOf(["A", "B", "C"]);
       }
     });
+
+    test("can mock interfaces", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnFlying {
+            __typename
+            ... on Bird {
+              returnInt
+              returnString
+            }
+            ... on Bee {
+              returnInt
+              returnEnum
+            }
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data.returnFlying.length).toBeGreaterThan(0);
+      expect(resp.data.returnFlying.length).toBeLessThan(5);
+      const firstType = resp.data.returnFlying[0];
+      expect(firstType.returnInt).toBeNumber();
+      if (firstType.__typename === "Bird") {
+        expect(firstType.returnString).toBeString();
+      } else {
+        expect(firstType.returnEnum).toBeOneOf(["A", "B", "C"]);
+      }
+    });
   });
 
   describe("With partial mocks provided", () => {
