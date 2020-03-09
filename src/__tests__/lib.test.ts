@@ -1,5 +1,6 @@
 import { mock } from "..";
 import { buildSchemaFromTypeDefinitions } from "graphql-tools";
+import { visitWithTypeInfo } from "graphql";
 // import { graphql, GraphQLResolveInfo } from "graphql";
 
 const schemaSDL = /* GraphQL */ `
@@ -60,16 +61,52 @@ const schema = buildSchemaFromTypeDefinitions(schemaSDL);
 
 describe("Mocking", () => {
   test("base case", () => {
+    // Given a query
     const query = /* GraphQL */ `
       query SampleQuery {
         returnInt
         returnString
+        returnFlying {
+          __typename
+          id
+          ... on Bird {
+            returnString
+          }
+          ... on Bee {
+            returnEnum
+          }
+          returnInt
+        }
       }
     `;
-    const resp: any = mock(schema, query);
-    expect(resp).toBe({
-      returnInt: 3,
-      returnString: "foo"
+
+    // And a partial mock
+    const mocks = {
+      returnString: "bar",
+      returnFlying: [
+        { __typename: "Bee", id: "123" },
+        { __typename: "Bee" },
+        { __typename: "Bird" }
+      ]
+    };
+
+    const resp: any = mock(schema, query, mocks);
+
+    // Return a fully mocked response
+    expect(resp).toMatchObject({
+      data: {
+        returnInt: expect.toBeNumber(),
+        returnString: "bar",
+        returnFlying: [
+          { __typename: "Bee", id: "123", returnEnum: expect.toBeOneOf(["A", "B", "C"]) },
+          {
+            __typename: "Bee",
+            id: expect.toBeString(),
+            returnEnum: expect.toBeOneOf(["A", "B", "C"])
+          },
+          { __typename: "Bird", id: expect.toBeString(), returnString: expect.toBeString() }
+        ]
+      }
     });
   });
 });
