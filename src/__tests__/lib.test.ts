@@ -59,7 +59,122 @@ const schemaSDL = /* GraphQL */ `
 
 const schema = buildSchemaFromTypeDefinitions(schemaSDL);
 
-describe("Mocking", () => {
+describe("Automocking", () => {
+  test.todo("it throws without a schema");
+  test.todo("it throws without a valid schema");
+  test.todo("it throws without a query");
+  test.todo("it throws without a valid query");
+
+  describe("No provided mocks", () => {
+    test("mocks the default types automatically", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnInt
+          returnString
+          returnFloat
+          returnBoolean
+          returnID
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data).toMatchObject({
+        returnInt: expect.toBeNumber(),
+        returnString: expect.toBeString(),
+        returnFloat: expect.toBeNumber(),
+        returnBoolean: expect.toBeBoolean(),
+        returnID: expect.toBeString()
+      });
+      expect(resp.data.returnInt % 1 === 0).toBe(true);
+      expect(resp.data.returnFloat % 1 !== 0).toBe(true);
+    });
+
+    test("can mock enums", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnEnum
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data).toMatchObject({
+        returnEnum: expect.toBeOneOf(["A", "B", "C"])
+      });
+    });
+
+    test("can mock unions", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnBirdsAndBees {
+            __typename
+            ... on Bird {
+              returnInt
+              returnString
+            }
+            ... on Bee {
+              returnInt
+              returnEnum
+            }
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data.returnBirdsAndBees.length).toBeGreaterThan(0);
+      expect(resp.data.returnBirdsAndBees.length).toBeLessThan(5);
+      const firstType = resp.data.returnBirdsAndBees[0];
+      expect(firstType.returnInt).toBeNumber();
+      if (firstType.__typename === "Bird") {
+        expect(firstType.returnString).toBeString();
+      } else {
+        expect(firstType.returnEnum).toBeOneOf(["A", "B", "C"]);
+      }
+    });
+  });
+
+  describe("With partial mocks provided", () => {
+    test("mocking simple root query field", () => {
+      // Given a query
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnInt
+          returnString
+        }
+      `;
+
+      // And a partial mock
+      const mocks = { returnString: "bar" };
+      const resp: any = mock(schema, query, mocks);
+
+      // Return a fully mocked response
+      expect(resp).toMatchObject({
+        data: {
+          returnInt: expect.toBeNumber(),
+          returnString: "bar"
+        }
+      });
+    });
+  });
+
+  test("mocking simple root query field", () => {
+    // Given a query
+    const query = /* GraphQL */ `
+      query SampleQuery {
+        returnInt
+        returnString
+      }
+    `;
+
+    // And a partial mock
+    const mocks = { returnString: "bar" };
+    const resp: any = mock(schema, query, mocks);
+
+    // Return a fully mocked response
+    expect(resp).toMatchObject({
+      data: {
+        returnInt: expect.toBeNumber(),
+        returnString: "bar"
+      }
+    });
+  });
+
   test("base case", () => {
     // Given a query
     const query = /* GraphQL */ `

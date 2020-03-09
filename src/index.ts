@@ -35,7 +35,8 @@ import {
   GraphQLNonNull,
   ListTypeNode,
   ListValueNode,
-  isAbstractType
+  isAbstractType,
+  GraphQLTypeResolver
 } from "graphql";
 import Maybe from "graphql/tsutils/Maybe";
 import { IMockFn, MockList } from "graphql-tools";
@@ -50,6 +51,9 @@ function forEachFieldInQuery(schema: GraphQLSchema, document: DocumentNode, fn: 
     visitWithTypeInfo(typeInfo, {
       [Kind.FIELD](node: FieldNode): FieldNode | null | undefined {
         const fieldName = node.name.value;
+        if (fieldName === "__typename") {
+          return;
+        }
         const parentType = typeInfo.getParentType();
         const parentFields = parentType.getFields();
         const fieldDef = parentFields[node.name.value]; // the schame field definition
@@ -95,7 +99,7 @@ defaultMockMap.set("ID", () => "123456");
 export function mock(schema: GraphQLSchema, query: string, partialMock?: any, options?: any) {
   const document = parse(query);
 
-  const mockResolverFunction = function(type, typeName, fieldName) {
+  const mockResolverFunction = function(type: GraphQLType, typeName?: string, fieldName?: string) {
     // order of precendence for mocking:
     // 1. if the object passed in already has fieldName, just use that
     // --> if it's a function, that becomes your resolver
@@ -103,15 +107,17 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
     // 2. if the nullableType is a list, recurse
     // 2. if there's a mock defined for this typeName, that will be used
     // 3. if there's no mock defined, use the default mocks for this type
-    return (root, args, context, info) => {
+    return (
+      root: any,
+      args: { [key: string]: any },
+      context: any,
+      info: GraphQLResolveInfo
+    ): any => {
       // nullability doesn't matter for the purpose of mocking.
       const fieldType = getNullableType(type) as GraphQLNullableType;
       const namedFieldType = getNamedType(fieldType);
-      // console.log("=======================");
-      // console.log(fieldName, typeName);
-      // console.log(root, args, context);
 
-      if (root && typeof root[fieldName] !== "undefined") {
+      if (root && fieldName && typeof root[fieldName] !== "undefined") {
         let result: any;
 
         // if (fieldType instanceof GraphQLList || fieldType instanceof GraphQLNonNull) {
@@ -143,19 +149,32 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
         return getRandomElement(fieldType.getValues()).value;
       }
 
+      // Lists
+      if (fieldType instanceof GraphQLList) {
+        return [
+          mockResolverFunction(fieldType.ofType)(root, args, context, info),
+          mockResolverFunction(fieldType.ofType)(root, args, context, info)
+        ];
+      }
+
+      if (fieldType instanceof GraphQLUnionType || fieldType instanceof GraphQLInterfaceType) {
+        let implementationType;
+        const possibleTypes = schema.getPossibleTypes(fieldType);
+        implementationType = getRandomElement(possibleTypes);
+        return Object.assign(
+          { __typename: implementationType },
+          mockResolverFunction(implementationType)(root, args, context, info)
+        );
+      }
+
       // Mock default scalars
       if (defaultMockMap.has(fieldType.name)) {
         return defaultMockMap.get(fieldType.name)(root, args, context, info);
       }
-
-      console.log("foooo");
     };
   };
 
   forEachFieldInQuery(schema, document, (field, typeName, fieldName) => {
-    if (fieldName === "__typename") {
-      return;
-    }
     assignResolveType(field.type); // assign the default .resolveType resolver.
     let mockResolver: GraphQLFieldResolver<any, any>;
     const mockFunctionMap: Map<string, IMockFn> = new Map();
@@ -163,9 +182,12 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
     // we have to handle the root mutation and root query types differently,
     // because no resolver is called at the root.
     /* istanbul ignore next: Must provide schema DefinitionNode with query type or a type named Query. */
-    const isOnQueryType: boolean = schema.getQueryType() && schema.getQueryType().name === typeName;
-    const isOnMutationType: boolean =
-      schema.getMutationType() && schema.getMutationType().name === typeName;
+    const isOnQueryType: boolean = !!(
+      schema.getQueryType() && schema.getQueryType()?.name === typeName
+    );
+    const isOnMutationType: boolean = !!(
+      schema.getMutationType() && schema.getMutationType()?.name === typeName
+    );
 
     if (isOnQueryType || isOnMutationType) {
       mockResolver = (
@@ -192,8 +214,6 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
     document,
     rootValue: {},
     contextValue: {}
-    // fieldResolver: (source, args, context, info) =>
-    //   console.log("Default", source, args, context, info)
   });
   return resp;
 }
