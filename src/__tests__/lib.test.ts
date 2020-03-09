@@ -60,10 +60,12 @@ const schemaSDL = /* GraphQL */ `
 const schema = buildSchemaFromTypeDefinitions(schemaSDL);
 
 describe("Automocking", () => {
-  test.todo("it throws without a schema");
-  test.todo("it throws without a valid schema");
-  test.todo("it throws without a query");
-  test.todo("it throws without a valid query");
+  describe("Guardrails", () => {
+    test.todo("it throws without a schema");
+    test.todo("it throws without a valid schema");
+    test.todo("it throws without a query");
+    test.todo("it throws without a valid query");
+  });
 
   describe("No provided mocks", () => {
     test("mocks the default types automatically", () => {
@@ -153,29 +155,7 @@ describe("Automocking", () => {
     });
   });
 
-  test("mocking simple root query field", () => {
-    // Given a query
-    const query = /* GraphQL */ `
-      query SampleQuery {
-        returnInt
-        returnString
-      }
-    `;
-
-    // And a partial mock
-    const mocks = { returnString: "bar" };
-    const resp: any = mock(schema, query, mocks);
-
-    // Return a fully mocked response
-    expect(resp).toMatchObject({
-      data: {
-        returnInt: expect.toBeNumber(),
-        returnString: "bar"
-      }
-    });
-  });
-
-  test("base case", () => {
+  test("base case - TBD remove this test later", () => {
     // Given a query
     const query = /* GraphQL */ `
       query SampleQuery {
