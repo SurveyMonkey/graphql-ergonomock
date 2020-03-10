@@ -108,16 +108,14 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
       const namedFieldType = getNamedType(fieldType);
 
       if (root && fieldName && typeof root[fieldName] !== "undefined") {
-        let result: any;
+        // // if we're here, the field is already defined on the root object so use it
+        // if (typeof root[fieldName] === "function") {
+        //   result = root[fieldName](root, args, context, info);
+        // } else {
+        //   result = root[fieldName];
+        // }
 
-        // if we're here, the field is already defined on the root object so use it
-        if (typeof root[fieldName] === "function") {
-          result = root[fieldName](root, args, context, info);
-        } else {
-          result = root[fieldName];
-        }
-
-        return result;
+        return root[fieldName];
       }
 
       // Default mock for enums
