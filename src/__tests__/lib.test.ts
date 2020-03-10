@@ -68,7 +68,7 @@ describe("Automocking", () => {
   });
 
   describe("No provided mocks", () => {
-    test("mocks the default types automatically", () => {
+    test("automocks the default types automatically", () => {
       const testQuery = /* GraphQL */ `
         {
           returnInt
@@ -90,7 +90,7 @@ describe("Automocking", () => {
       expect(resp.data.returnFloat % 1 !== 0).toBe(true);
     });
 
-    test("can mock enums", () => {
+    test("can automock enums", () => {
       const testQuery = /* GraphQL */ `
         {
           returnEnum
@@ -102,7 +102,7 @@ describe("Automocking", () => {
       });
     });
 
-    test("can mock unions", () => {
+    test("can automock unions", () => {
       const testQuery = /* GraphQL */ `
         {
           returnBirdsAndBees {
@@ -130,7 +130,7 @@ describe("Automocking", () => {
       }
     });
 
-    test("can mock interfaces", () => {
+    test("can automock interfaces", () => {
       const testQuery = /* GraphQL */ `
         {
           returnFlying {
@@ -157,10 +157,23 @@ describe("Automocking", () => {
         expect(firstType.returnEnum).toBeOneOf(["A", "B", "C"]);
       }
     });
+
+    test.todo("automocking of lists are deterministic on some seed");
+
+    test.todo("can automock objects");
+
+    test.todo("can automock nested unions");
+    test.todo("can automock nested interfaces");
+    test.todo("can automock nested basic types");
+    test.todo("can automock nested enums");
+    test.todo("can automock nested objects");
+    test.todo("can automock inline fragments");
+
+    test.todo("can provide field mock override");
   });
 
   describe("With partial mocks provided", () => {
-    test("mocking simple root query field", () => {
+    test("can return string mock", () => {
       // Given a query
       const query = /* GraphQL */ `
         query SampleQuery {
@@ -181,6 +194,34 @@ describe("Automocking", () => {
         }
       });
     });
+
+    test.todo("can return basic types in mock");
+    test.todo("can return basic types list in mock");
+    test.todo("can return basic enum mock");
+    test.todo("can return basic enum list mock");
+    test.todo("throws if provided enum mock is invalid");
+    test.todo("can return object mock");
+    test.todo("can return object mock list");
+    test.todo("can return union mock list");
+    test.todo("can return interface mock list");
+    test.todo("can return partial inline fragment mock");
+    test.todo("can return provided nested basic types");
+    test.todo("can return provided nested basic types list");
+    test.todo("can return provided nested enums");
+    test.todo("can return provided nested enums list");
+    test.todo("can return provided nested unions");
+    test.todo("can return provided nested interfaces");
+    test.todo("executes functions when provided, with variables as args");
+  });
+
+  describe("mocking errors", () => {
+    test.todo("can provide Errors for basic types");
+    test.todo("can provide Errors for enums");
+    test.todo("can provide Errors for objects");
+    test.todo("can provide Errors for lists (one error among list items)");
+    test.todo("can provide Errors for unions");
+    test.todo("can provide Errors for interfaces");
+    test.todo("can throw errors in functions as resolver");
   });
 
   test("base case - TBD remove this test later", () => {
