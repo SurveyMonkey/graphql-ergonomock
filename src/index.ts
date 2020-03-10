@@ -123,6 +123,11 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
         return getRandomElement(fieldType.getValues()).value;
       }
 
+      // Automock object types
+      if (isObjectType(fieldType)) {
+        return { __typename: fieldType.name };
+      }
+
       // Lists
       if (fieldType instanceof GraphQLList) {
         return [
