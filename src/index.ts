@@ -5,41 +5,23 @@ import {
   DocumentNode,
   visitWithTypeInfo,
   TypeInfo,
-  ASTNode,
-  OperationDefinitionNode,
   GraphQLType,
-  isScalarType,
-  isObjectType,
   FieldNode,
-  SelectionSetNode,
   GraphQLObjectType,
-  isExecutableDefinitionNode,
   visit,
   Kind,
   GraphQLInterfaceType,
   GraphQLUnionType,
-  Visitor,
   getNamedType,
-  isCompositeType,
-  isOutputType,
-  ASTKindToNode,
-  getVisitFn,
   GraphQLField,
   getNullableType,
   GraphQLNullableType,
   GraphQLResolveInfo,
-  GraphQLNamedType,
   GraphQLFieldResolver,
   GraphQLList,
   GraphQLEnumType,
-  GraphQLNonNull,
-  ListTypeNode,
-  ListValueNode,
-  isAbstractType,
-  GraphQLTypeResolver
+  isAbstractType
 } from "graphql";
-import Maybe from "graphql/tsutils/Maybe";
-import { IMockFn, MockList } from "graphql-tools";
 import { getFieldDef } from "graphql/execution/execute";
 
 type IteratorFn = (fieldDef: GraphQLField<any, any>, parentType: string, fieldName: string) => void;
@@ -89,7 +71,7 @@ function getRandomElement(ary: ReadonlyArray<any>) {
   return ary[sample];
 }
 
-const defaultMockMap: Map<string, IMockFn> = new Map();
+const defaultMockMap: Map<string, GraphQLFieldResolver<any, any>> = new Map();
 defaultMockMap.set("Int", () => Math.round(Math.random() * 200) - 100);
 defaultMockMap.set("Float", () => Math.random() * 200 - 100);
 defaultMockMap.set("String", () => "Hello World");
@@ -120,12 +102,6 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
       if (root && fieldName && typeof root[fieldName] !== "undefined") {
         let result: any;
 
-        // if (fieldType instanceof GraphQLList || fieldType instanceof GraphQLNonNull) {
-        //   return root[fieldName].map(root2 => {
-        //     return mockResolverFunction(fieldType.ofType)(root2, args, context, info);
-        //   });
-        // }
-
         // if we're here, the field is already defined on the root object so use it
         if (typeof root[fieldName] === "function") {
           result = root[fieldName](root, args, context, info);
@@ -133,14 +109,6 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
           result = root[fieldName];
         }
 
-        // Now we merge the result with the default mock for this type.
-        // This allows overriding defaults while writing very little code.
-        // if (mockFunctionMap.has(namedFieldType.name)) {
-        //   result = mergeMocks(
-        //     mockFunctionMap.get(namedFieldType.name).bind(null, root, args, context, info),
-        //     result
-        //   );
-        // }
         return result;
       }
 
@@ -157,6 +125,7 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
         ];
       }
 
+      // Unions and interfaces
       if (fieldType instanceof GraphQLUnionType || fieldType instanceof GraphQLInterfaceType) {
         let implementationType;
         const possibleTypes = schema.getPossibleTypes(fieldType);
@@ -169,7 +138,7 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
 
       // Mock default scalars
       if (defaultMockMap.has(fieldType.name)) {
-        return defaultMockMap.get(fieldType.name)(root, args, context, info);
+        return defaultMockMap.get(fieldType.name)!(root, args, context, info);
       }
     };
   };
@@ -177,7 +146,6 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
   forEachFieldInQuery(schema, document, (field, typeName, fieldName) => {
     assignResolveType(field.type); // assign the default .resolveType resolver.
     let mockResolver: GraphQLFieldResolver<any, any>;
-    const mockFunctionMap: Map<string, IMockFn> = new Map();
 
     // we have to handle the root mutation and root query types differently,
     // because no resolver is called at the root.
