@@ -20,7 +20,8 @@ import {
   GraphQLFieldResolver,
   GraphQLList,
   GraphQLEnumType,
-  isAbstractType
+  isAbstractType,
+  isObjectType
 } from "graphql";
 import { getFieldDef } from "graphql/execution/execute";
 
@@ -37,14 +38,21 @@ function forEachFieldInQuery(schema: GraphQLSchema, document: DocumentNode, fn: 
           return;
         }
         const parentType = typeInfo.getParentType();
-        const parentFields = parentType.getFields();
-        const fieldDef = parentFields[node.name.value]; // the schame field definition
         // const fieldType = typeInfo.getType(); // the return type of this field.
         if (isAbstractType(parentType)) {
           const possibleTypes = schema.getPossibleTypes(parentType);
-          possibleTypes.forEach(t => fn(getFieldDef(schema, t, fieldName), t.name, fieldName));
+          possibleTypes.forEach(t => {
+            const fieldDef = getFieldDef(schema, t, fieldName);
+            if (fieldDef) {
+              fn(fieldDef, t.name, fieldName);
+            }
+          });
         }
-        fn(fieldDef, parentType.name, fieldName);
+        if (isObjectType(parentType)) {
+          const parentFields = parentType.getFields();
+          const fieldDef = parentFields[node.name.value]; // the schame field definition
+          fn(fieldDef, parentType.name, fieldName);
+        }
       }
     })
   );
