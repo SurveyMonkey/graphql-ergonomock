@@ -26,12 +26,25 @@ const schemaSDL = /* GraphQL */ `
     B
     C
   }
+  type Shape {
+    id: String!
+    returnInt: Int
+    returnEnum: SomeEnum
+    flying: [Flying]
+    birdsAndBees: [BirdsAndBees]
+    returnFloat: Float
+    returnString: String
+    returnBoolean: Boolean
+    returnID: ID
+    nestedShape: Shape
+  }
   type RootQuery {
     returnInt: Int
     returnFloat: Float
     returnString: String
     returnBoolean: Boolean
     returnID: ID
+    returnShape: Shape
     returnEnum: SomeEnum
     returnBirdsAndBees: [BirdsAndBees]
     returnFlying: [Flying]
@@ -157,19 +170,182 @@ describe("Automocking", () => {
         expect(firstType.returnEnum).toBeOneOf(["A", "B", "C"]);
       }
     });
+    test("can automock objects", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            id
+            returnEnum
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data).toMatchObject({
+        returnShape: {
+          id: expect.toBeString(),
+          returnEnum: expect.toBeOneOf(["A", "B", "C"])
+        }
+      });
+    });
+    test("can automock nested unions", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            id
+            birdsAndBees {
+              __typename
+              ... on Bird {
+                returnInt
+                returnString
+              }
+              ... on Bee {
+                returnInt
+                returnEnum
+              }
+            }
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      const shape = resp.data.returnShape;
+      expect(shape.id).toBeString();
+      expect(shape.birdsAndBees.length).toBeGreaterThan(0);
+      expect(shape.birdsAndBees.length).toBeLessThan(5);
+      const firstType = shape.birdsAndBees[0];
+      expect(firstType.returnInt).toBeNumber();
+      if (firstType.__typename === "Bird") {
+        expect(firstType.returnString).toBeString();
+      } else {
+        expect(firstType.returnEnum).toBeOneOf(["A", "B", "C"]);
+      }
+    });
 
-    test.todo("automocking of lists are deterministic on some seed");
+    test("can automock nested interfaces", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            id
+            flying {
+              __typename
+              ... on Bird {
+                returnInt
+                returnString
+              }
+              ... on Bee {
+                returnInt
+                returnEnum
+              }
+            }
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      const shape = resp.data.returnShape;
+      expect(shape.id).toBeString();
+      expect(shape.flying.length).toBeGreaterThan(0);
+      expect(shape.flying.length).toBeLessThan(5);
+      const firstType = shape.flying[0];
+      expect(firstType.returnInt).toBeNumber();
+      if (firstType.__typename === "Bird") {
+        expect(firstType.returnString).toBeString();
+      } else {
+        expect(firstType.returnEnum).toBeOneOf(["A", "B", "C"]);
+      }
+    });
 
-    test.todo("can automock objects");
+    test("can automock nested basic types", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            returnInt
+            returnString
+            returnFloat
+            returnBoolean
+            returnID
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data.returnShape).toMatchObject({
+        returnInt: expect.toBeNumber(),
+        returnString: expect.toBeString(),
+        returnFloat: expect.toBeNumber(),
+        returnBoolean: expect.toBeBoolean(),
+        returnID: expect.toBeString()
+      });
+      expect(resp.data.returnShape.returnInt % 1 === 0).toBe(true);
+      expect(resp.data.returnShape.returnFloat % 1 !== 0).toBe(true);
+    });
+    test("can automock nested enums", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            returnEnum
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data.returnShape).toMatchObject({
+        returnEnum: expect.toBeOneOf(["A", "B", "C"])
+      });
+    });
+    test("can automock nested objects", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            nestedShape {
+              returnInt
+              returnString
+              returnFloat
+              returnBoolean
+              returnID
+            }
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data.returnShape.nestedShape).toMatchObject({
+        returnInt: expect.toBeNumber(),
+        returnString: expect.toBeString(),
+        returnFloat: expect.toBeNumber(),
+        returnBoolean: expect.toBeBoolean(),
+        returnID: expect.toBeString()
+      });
+    });
+    test("can automock inline fragments", () => {
+      const testQuery = /* GraphQL */ `
+        fragment ShapeParts on Shape {
+          returnInt
+          returnString
+          returnFloat
+        }
 
-    test.todo("can automock nested unions");
-    test.todo("can automock nested interfaces");
-    test.todo("can automock nested basic types");
-    test.todo("can automock nested enums");
-    test.todo("can automock nested objects");
-    test.todo("can automock inline fragments");
+        query {
+          returnShape {
+            id
+            ...ShapeParts
+            nestedShape {
+              ...ShapeParts
+            }
+          }
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data.returnShape).toMatchObject({
+        id: expect.toBeString(),
+        returnInt: expect.toBeNumber(),
+        returnString: expect.toBeString(),
+        returnFloat: expect.toBeNumber(),
+        nestedShape: {
+          returnInt: expect.toBeNumber(),
+          returnString: expect.toBeString(),
+          returnFloat: expect.toBeNumber()
+        }
+      });
+    });
 
     test.todo("can provide field mock override");
+    test.todo("automocking of lists are deterministic on some seed");
   });
 
   describe("With partial mocks provided", () => {
