@@ -108,6 +108,10 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
       const namedFieldType = getNamedType(fieldType);
 
       if (root && fieldName && typeof root[fieldName] !== "undefined") {
+        const mock = root[fieldName];
+        if (typeof mock === "function") {
+          return mock(root, args, context, info);
+        }
         return root[fieldName];
       }
 

@@ -836,12 +836,6 @@ describe("Automocking", () => {
 
     test("can return provided nested basic types list", () => {
       const testQuery = /* GraphQL */ `
-        fragment ShapeParts on Shape {
-          returnInt
-          returnString
-          returnFloat
-        }
-
         query {
           returnShape {
             id
@@ -887,7 +881,36 @@ describe("Automocking", () => {
   });
 
   describe("calling mock functions", () => {
-    test.todo("executes functions when provided, with variables as args");
+    test("uses any function on the mock as resolver if present", () => {
+      expect.hasAssertions();
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            returnInt
+            returnString
+            nestedShape {
+              returnInt
+            }
+          }
+        }
+      `;
+      let rootReturnIntValue;
+      const mocks = {
+        returnShape: {
+          returnInt: 4321,
+          nestedShape: (root: any, args: any, ctx: any, info: any) => {
+            rootReturnIntValue = root.returnInt;
+            return {
+              returnInt: 1234
+            };
+          }
+        }
+      };
+      const resp: any = mock(schema, testQuery, mocks);
+      expect(resp.data.returnShape.nestedShape.returnInt).toBe(1234);
+      expect(rootReturnIntValue).toBe(4321);
+      expect(resp.data.returnShape.returnInt).toBe(4321);
+    });
   });
 
   describe("mocking errors", () => {
