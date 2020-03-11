@@ -37,6 +37,7 @@ const schemaSDL = /* GraphQL */ `
     returnBoolean: Boolean
     returnID: ID
     nestedShape: Shape
+    nestedShapeList: [Shape]
   }
   type RootQuery {
     returnInt: Int
@@ -44,8 +45,14 @@ const schemaSDL = /* GraphQL */ `
     returnString: String
     returnBoolean: Boolean
     returnID: ID
+    returnIntList: [Int]
+    returnFloatList: [Float]
+    returnStringList: [String]
+    returnBooleanList: [Boolean]
     returnShape: Shape
+    returnShapeList: [Shape]
     returnEnum: SomeEnum
+    returnEnumList: [SomeEnum]
     returnBirdsAndBees: [BirdsAndBees]
     returnFlying: [Flying]
     returnMockError: MissingMockType
@@ -349,35 +356,334 @@ describe("Automocking", () => {
   });
 
   describe("With partial mocks provided", () => {
-    test("can return string mock", () => {
-      // Given a query
+    test("can return basic types in mock", () => {
       const query = /* GraphQL */ `
         query SampleQuery {
           returnInt
           returnString
+          returnFloat
+          returnBoolean
+          returnID
         }
       `;
 
-      // And a partial mock
-      const mocks = { returnString: "bar" };
+      const mocks = {
+        returnString: "bar",
+        returnInt: 12345,
+        returnFloat: 10.2,
+        returnBoolean: false
+      };
       const resp: any = mock(schema, query, mocks);
 
-      // Return a fully mocked response
       expect(resp).toMatchObject({
         data: {
-          returnInt: expect.toBeNumber(),
-          returnString: "bar"
+          returnID: expect.toBeString(),
+          ...mocks
+        }
+      });
+    });
+    test("can return basic types list in mock", () => {
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnIntList
+          returnStringList
+          returnFloatList
+          returnBooleanList
+          returnID
+        }
+      `;
+
+      const mocks = {
+        returnStringList: ["bar"],
+        returnIntList: [12345, 54321],
+        returnFloatList: [10.2, 10.2],
+        returnBooleanList: [false]
+      };
+      const resp: any = mock(schema, query, mocks);
+
+      expect(resp).toMatchObject({
+        data: {
+          returnID: expect.toBeString(),
+          ...mocks
+        }
+      });
+    });
+    test("can return basic enum mock", () => {
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnEnum
+          returnShape {
+            id
+          }
+        }
+      `;
+
+      const mocks = {
+        returnEnum: "A"
+      };
+      const resp: any = mock(schema, query, mocks);
+
+      expect(resp).toMatchObject({
+        data: {
+          returnEnum: "A",
+          returnShape: {
+            id: expect.toBeString()
+          }
         }
       });
     });
 
-    test.todo("can return basic types in mock");
-    test.todo("can return basic types list in mock");
-    test.todo("can return basic enum mock");
-    test.todo("can return basic enum list mock");
-    test.todo("throws if provided enum mock is invalid");
-    test.todo("can return object mock");
-    test.todo("can return object mock list");
+    test("can return basic enum list mock", () => {
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnEnumList
+          returnShape {
+            id
+          }
+        }
+      `;
+
+      const mocks = {
+        returnEnumList: ["A", "C"]
+      };
+      const resp: any = mock(schema, query, mocks);
+
+      expect(resp).toMatchObject({
+        data: {
+          returnEnumList: ["A", "C"],
+          returnShape: {
+            id: expect.toBeString()
+          }
+        }
+      });
+    });
+
+    test("returns error if provided enum mock is invalid", () => {
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnEnum
+          returnShape {
+            id
+          }
+        }
+      `;
+
+      const mocks = {
+        returnEnum: "D"
+      };
+      const resp: any = mock(schema, query, mocks);
+      expect(resp.errors[0].message).toBe('Expected a value of type "SomeEnum" but received: "D"');
+      expect(resp).toMatchObject({
+        data: {
+          returnEnum: null,
+          returnShape: {
+            id: expect.toBeString()
+          }
+        }
+      });
+    });
+    test("can return object mock", () => {
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnEnum
+          returnShape {
+            id
+            returnInt
+            nestedShape {
+              id
+              returnInt
+              nestedShape {
+                id
+                returnInt
+                nestedShape {
+                  id
+                  returnInt
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      const mocks = {
+        returnShape: {
+          returnInt: 1,
+          nestedShape: {
+            returnInt: 2,
+            nestedShape: {
+              returnInt: 3,
+              nestedShape: {
+                returnInt: 4
+              }
+            }
+          }
+        }
+      };
+      const resp: any = mock(schema, query, mocks);
+      expect(resp).toMatchObject({
+        data: {
+          returnEnum: expect.toBeOneOf(["A", "B", "C"]),
+          returnShape: {
+            id: expect.toBeString(),
+            returnInt: 1,
+            nestedShape: {
+              id: expect.toBeString(),
+              returnInt: 2,
+              nestedShape: {
+                id: expect.toBeString(),
+                returnInt: 3,
+                nestedShape: {
+                  id: expect.toBeString(),
+                  returnInt: 4
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+    test("can return object mock list", () => {
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnEnum
+          returnShapeList {
+            id
+            returnInt
+            nestedShapeList {
+              id
+              returnInt
+              nestedShape {
+                id
+                returnInt
+                nestedShape {
+                  id
+                  returnInt
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      const mocks = {
+        returnShapeList: [
+          {
+            returnInt: 1,
+            nestedShapeList: [
+              {
+                returnInt: 2,
+                nestedShape: {
+                  returnInt: 3,
+                  nestedShape: {
+                    returnInt: 4
+                  }
+                }
+              },
+              {
+                returnInt: 5,
+                nestedShape: {
+                  returnInt: 6,
+                  nestedShape: {
+                    returnInt: 7
+                  }
+                }
+              }
+            ]
+          },
+          {
+            returnInt: 8,
+            nestedShapeList: [
+              {
+                returnInt: 9,
+                nestedShape: {
+                  returnInt: 10,
+                  nestedShape: {
+                    returnInt: 11
+                  }
+                }
+              },
+              {
+                returnInt: 12,
+                nestedShape: {
+                  returnInt: 13,
+                  nestedShape: {
+                    returnInt: 14
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+      const resp: any = mock(schema, query, mocks);
+      expect(resp).toMatchObject({
+        data: {
+          returnEnum: expect.toBeOneOf(["A", "B", "C"]),
+          returnShapeList: [
+            {
+              id: expect.toBeString(),
+              returnInt: 1,
+              nestedShapeList: [
+                {
+                  id: expect.toBeString(),
+                  returnInt: 2,
+                  nestedShape: {
+                    id: expect.toBeString(),
+                    returnInt: 3,
+                    nestedShape: {
+                      id: expect.toBeString(),
+                      returnInt: 4
+                    }
+                  }
+                },
+                {
+                  id: expect.toBeString(),
+                  returnInt: 5,
+                  nestedShape: {
+                    id: expect.toBeString(),
+                    returnInt: 6,
+                    nestedShape: {
+                      id: expect.toBeString(),
+                      returnInt: 7
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              id: expect.toBeString(),
+              returnInt: 8,
+              nestedShapeList: [
+                {
+                  id: expect.toBeString(),
+                  returnInt: 9,
+                  nestedShape: {
+                    id: expect.toBeString(),
+                    returnInt: 10,
+                    nestedShape: {
+                      id: expect.toBeString(),
+                      returnInt: 11
+                    }
+                  }
+                },
+                {
+                  id: expect.toBeString(),
+                  returnInt: 12,
+                  nestedShape: {
+                    id: expect.toBeString(),
+                    returnInt: 13,
+                    nestedShape: {
+                      id: expect.toBeString(),
+                      returnInt: 14
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      });
+    });
     test.todo("can return union mock list");
     test.todo("can return interface mock list");
     test.todo("can return partial inline fragment mock");
@@ -401,7 +707,6 @@ describe("Automocking", () => {
   });
 
   test("base case - TBD remove this test later", () => {
-    // Given a query
     const query = /* GraphQL */ `
       query SampleQuery {
         returnInt
@@ -420,7 +725,6 @@ describe("Automocking", () => {
       }
     `;
 
-    // And a partial mock
     const mocks = {
       returnString: "bar",
       returnFlying: [
@@ -432,7 +736,6 @@ describe("Automocking", () => {
 
     const resp: any = mock(schema, query, mocks);
 
-    // Return a fully mocked response
     expect(resp).toMatchObject({
       data: {
         returnInt: expect.toBeNumber(),

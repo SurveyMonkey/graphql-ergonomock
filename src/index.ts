@@ -108,13 +108,6 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
       const namedFieldType = getNamedType(fieldType);
 
       if (root && fieldName && typeof root[fieldName] !== "undefined") {
-        // // if we're here, the field is already defined on the root object so use it
-        // if (typeof root[fieldName] === "function") {
-        //   result = root[fieldName](root, args, context, info);
-        // } else {
-        //   result = root[fieldName];
-        // }
-
         return root[fieldName];
       }
 
@@ -160,7 +153,6 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
 
     // we have to handle the root mutation and root query types differently,
     // because no resolver is called at the root.
-    /* istanbul ignore next: Must provide schema DefinitionNode with query type or a type named Query. */
     const isOnQueryType: boolean = !!(
       schema.getQueryType() && schema.getQueryType()?.name === typeName
     );
