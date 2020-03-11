@@ -21,16 +21,13 @@
 <br />
 <p align="center">
   <a href="https://github.com/joual/graphql-ergonomock">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <!-- <img src="images/logo.png" alt="Logo" width="80" height="80"> -->
   </a>
 
-  <h3 align="center">graphql-ergonomock</h3>
+  <h3 align="center">GraphQL Ergonomock</h3>
 
   <p align="center">
     Developer-friendly automock for GraphQL
-    <br />
-    <a href="https://github.com/joual/graphql-ergonomock"><strong>Explore the docs »</strong></a>
-    <br />
     <br />
     <a href="https://github.com/joual/graphql-ergonomock/issues">Report Bug</a>
     ·
@@ -45,6 +42,7 @@
 
 - [Table of Contents](#table-of-contents)
 - [About The Project](#about-the-project)
+  - [Basic Example](#basic-example)
   - [Built With](#built-with)
 - [Getting Started](#getting-started)
   - [Installation](#installation)
@@ -60,18 +58,69 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+This library provides a developer-friendly method to mock your GraphQL requests. By default, it ships with the following features:
 
-There are many great README templates available on GitHub, however, I didn't find one that really suit my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need.
+* **Automatic mocking** of types and fields based on schema definition.
+* *Deterministic randomization* of mocked values based on the provided mock shape, to support usage of features such as snapshots.
+* Support for queries using *fragments, unions & interfaces*.
+* Allows usage of *functions as mock values*, which have the signature of a GraphQL resolver, and are resolved at runtime.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should element DRY principles to the rest of your life :smile:
+### Basic Example
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue.
+```js
+import { mock } from 'graphql-ergonomock';
 
-A list of commonly used resources that I find helpful are listed in the acknowledgements.
+const schema = gql`
+  type Shape {
+    id: ID!
+    returnInt: Int
+    nestedShape: Shape
+    returnBoolean: Boolean
+  }
+
+  type Query {
+    getShape: Shape
+  }
+`;
+
+const query = gql`
+{
+  getShape {
+    id
+    nestedShape {
+      returnInt
+      nestedShape {
+        returnInt
+        returnBoolean
+      }
+    }
+  }
+}
+`;
+
+const mocks = {
+  getShape: {
+    nestedShape: {
+      returnInt: 5,
+      nestedShape: {
+        returnInt: 10
+      }
+    }
+  }
+};
+
+const resp = mock(schema, query, mocks);
+expect(resp.data).toMatchObject({
+  id: expect.toBeString(),
+  nestedShape: {
+    returnInt: 5,
+    nestedShape: {
+      returnInt: 10,
+      returnBoolean: expect.toBeBoolean()
+    }
+  }
+}); // ✅ test pass
+```
 
 ### Built With
 This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
@@ -94,7 +143,6 @@ npm i graphql-ergonomock --save-dev
 ### Usage
 
 TBD
-
 
 
 <!-- ROADMAP -->
@@ -127,7 +175,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/joual) - email@example.com
+Maintainer: Joel Marcotte (Github @joual)
 
 Project Link: [https://github.com/joual/graphql-ergonomock](https://github.com/joual/graphql-ergonomock)
 
@@ -136,21 +184,9 @@ Project Link: [https://github.com/joual/graphql-ergonomock](https://github.com/j
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
 
-TBD
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Img Shields](https://shields.io)
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Pages](https://pages.github.com)
-* [Animate.css](https://daneden.github.io/animate.css)
-* [Loaders.css](https://connoratherton.com/loaders)
-* [Slick Carousel](https://kenwheeler.github.io/slick)
-* [Smooth Scroll](https://github.com/cferdinandi/smooth-scroll)
-* [Sticky Kit](http://leafo.net/sticky-kit)
-* [JVectorMap](http://jvectormap.com)
-* [Font Awesome](https://fontawesome.com)
-
-
-
+* [A new approach to mocking GraphQL Data](https://www.freecodecamp.org/news/a-new-approach-to-mocking-graphql-data-1ef49de3d491/)
+* [GraphQL-Tools](https://github.com/apollographql/graphql-tools)
+* [GraphQL-JS](https://github.com/graphql/graphql-js)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
