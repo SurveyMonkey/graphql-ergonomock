@@ -28,14 +28,20 @@ const schemaSDL = /* GraphQL */ `
   }
   type Shape {
     id: String!
-    returnInt: Int
-    returnEnum: SomeEnum
     flying: [Flying]
     birdsAndBees: [BirdsAndBees]
+    returnInt: Int
+    returnEnum: SomeEnum
     returnFloat: Float
     returnString: String
     returnBoolean: Boolean
+    returnIntList: [Int]
+    returnEnumList: [SomeEnum]
+    returnFloatList: [Float]
+    returnStringList: [String]
+    returnBooleanList: [Boolean]
     returnID: ID
+    returnIDList: [ID]
     nestedShape: Shape
     nestedShapeList: [Shape]
   }
@@ -45,6 +51,7 @@ const schemaSDL = /* GraphQL */ `
     returnString: String
     returnBoolean: Boolean
     returnID: ID
+    returnIDList: [ID]
     returnIntList: [Int]
     returnFloatList: [Float]
     returnStringList: [String]
@@ -108,6 +115,34 @@ describe("Automocking", () => {
       });
       expect(resp.data.returnInt % 1 === 0).toBe(true);
       expect(resp.data.returnFloat % 1 !== 0).toBe(true);
+    });
+
+    test("automocks the default type lists automatically", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnIntList
+          returnStringList
+          returnFloatList
+          returnBooleanList
+          returnIDList
+        }
+      `;
+      const resp: any = mock(schema, testQuery);
+      expect(resp.data).toMatchObject({
+        returnIntList: expect.toBeArray(),
+        returnStringList: expect.toBeArray(),
+        returnFloatList: expect.toBeArray(),
+        returnBooleanList: expect.toBeArray(),
+        returnIDList: expect.toBeArray()
+      });
+      function getLastElement(arr: any[]) {
+        return arr[arr.length - 1];
+      }
+      expect(getLastElement(resp.data.returnIntList) % 1 === 0).toBe(true);
+      expect(getLastElement(resp.data.returnFloatList) % 1 !== 0).toBe(true);
+      expect(getLastElement(resp.data.returnBooleanList)).toBeBoolean();
+      expect(getLastElement(resp.data.returnIDList)).toBeString();
+      expect(getLastElement(resp.data.returnStringList)).toBeString();
     });
 
     test("can automock enums", () => {
@@ -684,15 +719,174 @@ describe("Automocking", () => {
         }
       });
     });
-    test.todo("can return union mock list");
-    test.todo("can return interface mock list");
-    test.todo("can return partial inline fragment mock");
-    test.todo("can return provided nested basic types");
-    test.todo("can return provided nested basic types list");
-    test.todo("can return provided nested enums");
-    test.todo("can return provided nested enums list");
-    test.todo("can return provided nested unions");
-    test.todo("can return provided nested interfaces");
+
+    test("can return union mock list", () => {
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnEnum
+          returnBirdsAndBees {
+            __typename
+            returnInt
+            ... on Bird {
+              returnString
+            }
+            ... on Bee {
+              returnEnum
+            }
+          }
+        }
+      `;
+
+      const mocks = {
+        returnBirdsAndBees: [
+          { __typename: "Bird", returnString: "foo bar" },
+          { __typename: "Bee", returnEnum: "A" },
+          { __typename: "Bee", returnEnum: "B" }
+        ]
+      };
+      const resp: any = mock(schema, query, mocks);
+      expect(resp).toMatchObject({
+        data: {
+          returnEnum: expect.toBeOneOf(["A", "B", "C"]),
+          returnBirdsAndBees: [
+            { __typename: "Bird", returnString: "foo bar", returnInt: expect.toBeNumber() },
+            { __typename: "Bee", returnEnum: "A", returnInt: expect.toBeNumber() },
+            { __typename: "Bee", returnEnum: "B", returnInt: expect.toBeNumber() }
+          ]
+        }
+      });
+    });
+
+    test("can return interface mock list", () => {
+      const query = /* GraphQL */ `
+        query SampleQuery {
+          returnEnum
+          returnFlying {
+            __typename
+            returnInt
+            ... on Bird {
+              returnString
+            }
+            ... on Bee {
+              returnEnum
+            }
+          }
+        }
+      `;
+
+      const mocks = {
+        returnFlying: [
+          { __typename: "Bird", returnString: "foo bar" },
+          { __typename: "Bee", returnEnum: "A" },
+          { __typename: "Bee", returnEnum: "B" }
+        ]
+      };
+      const resp: any = mock(schema, query, mocks);
+      expect(resp).toMatchObject({
+        data: {
+          returnEnum: expect.toBeOneOf(["A", "B", "C"]),
+          returnFlying: [
+            { __typename: "Bird", returnString: "foo bar", returnInt: expect.toBeNumber() },
+            { __typename: "Bee", returnEnum: "A", returnInt: expect.toBeNumber() },
+            { __typename: "Bee", returnEnum: "B", returnInt: expect.toBeNumber() }
+          ]
+        }
+      });
+    });
+
+    test("can return partial inline fragment mock", () => {
+      const testQuery = /* GraphQL */ `
+        fragment ShapeParts on Shape {
+          returnInt
+          returnString
+          returnFloat
+        }
+
+        query {
+          returnShape {
+            id
+            ...ShapeParts
+            nestedShape {
+              ...ShapeParts
+            }
+          }
+        }
+      `;
+      const mocks = {
+        returnShape: {
+          returnInt: 4,
+          nestedShape: {
+            returnString: "Bar"
+          }
+        }
+      };
+      const resp: any = mock(schema, testQuery, mocks);
+      expect(resp.data.returnShape).toMatchObject({
+        id: expect.toBeString(),
+        returnInt: 4,
+        returnString: expect.toBeString(),
+        returnFloat: expect.toBeNumber(),
+        nestedShape: {
+          returnInt: expect.toBeNumber(),
+          returnString: "Bar",
+          returnFloat: expect.toBeNumber()
+        }
+      });
+    });
+
+    test("can return provided nested basic types list", () => {
+      const testQuery = /* GraphQL */ `
+        fragment ShapeParts on Shape {
+          returnInt
+          returnString
+          returnFloat
+        }
+
+        query {
+          returnShape {
+            id
+            nestedShape {
+              returnIntList
+              returnStringList
+              returnFloatList
+              returnEnumList
+              returnIDList
+              returnBooleanList
+            }
+          }
+        }
+      `;
+      const mocks = {
+        returnShape: {
+          returnIntList: [4, 4, 3],
+          nestedShape: {
+            returnStringList: ["Bar"]
+          }
+        }
+      };
+      const resp: any = mock(schema, testQuery, mocks);
+      expect(resp.data.returnShape.nestedShape).toMatchObject({
+        returnIntList: expect.toBeArray(),
+        returnStringList: expect.toBeArray(),
+        returnFloatList: expect.toBeArray(),
+        returnBooleanList: expect.toBeArray(),
+        returnIDList: expect.toBeArray(),
+        returnEnumList: expect.toBeArray()
+      });
+      function getLastElement(arr: any[]) {
+        return arr[arr.length - 1];
+      }
+      const nestedShape = resp.data.returnShape.nestedShape;
+      expect(getLastElement(nestedShape.returnIntList) % 1 === 0).toBe(true);
+      expect(getLastElement(nestedShape.returnFloatList) % 1 !== 0).toBe(true);
+      expect(getLastElement(nestedShape.returnBooleanList)).toBeBoolean();
+      expect(getLastElement(nestedShape.returnIDList)).toBeString();
+      expect(getLastElement(nestedShape.returnEnumList)).toBeOneOf(["A", "B", "C"]);
+      expect(getLastElement(nestedShape.returnStringList)).toBeString();
+    });
+  });
+
+  describe("calling mock functions", () => {
     test.todo("executes functions when provided, with variables as args");
   });
 
