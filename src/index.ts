@@ -90,6 +90,7 @@ export function mock(schema: GraphQLSchema, query: string, partialMock?: any, op
   const document = parse(query);
 
   const mockResolverFunction = function(type: GraphQLType, typeName?: string, fieldName?: string) {
+    // TODO: clean up this comment, which was taken as-is from apollo
     // order of precendence for mocking:
     // 1. if the object passed in already has fieldName, just use that
     // --> if it's a function, that becomes your resolver
