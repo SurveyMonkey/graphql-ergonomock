@@ -8,8 +8,12 @@
   "scripts": {
     "test": "jest --coverage",
     "build": "rimraf ./dist && tsc",
+    "prepublishOnly": "npm run build",
     "semantic-release": "semantic-release"
   },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/jest": "25.1.4",
     "jest": "25.1.0",
