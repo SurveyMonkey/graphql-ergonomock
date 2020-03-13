@@ -47,6 +47,11 @@
 - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Usage](#usage)
+    - [Default Case](#default-case)
+    - [Partial Nested Shape](#partial-nested-shape)
+    - [Providing Functions as Resolver](#providing-functions-as-resolver)
+    - [Mocking Errors](#mocking-errors)
+    - [Mocking Mutations](#mocking-mutations)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -145,8 +150,41 @@ npm i graphql-ergonomock --save-dev
 <!-- USAGE EXAMPLES -->
 ### Usage
 
+#### Default Case
+
 TBD
 
+#### Partial Nested Shape
+
+TBD
+
+#### Providing Functions as Resolver
+
+TBD
+
+#### Mocking Errors
+
+```js
+const testQuery = gql`
+  {
+    getCar {
+      id
+    }
+  }
+`;
+
+const resp = mock(schema, testQuery, {
+  getCar: () => { throw new Error("Server Error"); }
+  // or simply getCar: new Error("Server Error")
+});
+
+console.log(resp.data.getCar); // null
+console.log(resp.errors[0]); // { message: "Server Error", ...}
+```
+
+#### Mocking Mutations
+
+TBD
 
 <!-- ROADMAP -->
 ## Roadmap

@@ -1,6 +1,6 @@
 import { mock } from "..";
 import { buildSchemaFromTypeDefinitions } from "graphql-tools";
-import { visitWithTypeInfo } from "graphql";
+import { visitWithTypeInfo, GraphQLError } from "graphql";
 // import { graphql, GraphQLResolveInfo } from "graphql";
 
 const schemaSDL = /* GraphQL */ `
@@ -914,13 +914,142 @@ describe("Automocking", () => {
   });
 
   describe("mocking errors", () => {
-    test.todo("can provide Errors for basic types");
-    test.todo("can provide Errors for enums");
-    test.todo("can provide Errors for objects");
-    test.todo("can provide Errors for lists (one error among list items)");
-    test.todo("can provide Errors for unions");
-    test.todo("can provide Errors for interfaces");
-    test.todo("can throw errors in functions as resolver");
+    test("can provide Errors for basic types", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnInt
+          returnString
+        }
+      `;
+      const resp: any = mock(schema, testQuery, {
+        returnInt: new Error("foo bar")
+      });
+      expect(resp.data).toMatchObject({
+        returnInt: null,
+        returnString: expect.toBeString()
+      });
+      expect(resp.errors).toStrictEqual([new GraphQLError("foo bar")]);
+    });
+
+    test("can provide Errors for enums", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnEnum
+          returnString
+        }
+      `;
+      const resp: any = mock(schema, testQuery, {
+        returnEnum: new Error("foo enum")
+      });
+      expect(resp.data).toMatchObject({
+        returnEnum: null,
+        returnString: expect.toBeString()
+      });
+      expect(resp.errors).toStrictEqual([new GraphQLError("foo enum")]);
+    });
+
+    test("can provide Errors for objects", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            id
+          }
+          returnString
+        }
+      `;
+      const resp: any = mock(schema, testQuery, {
+        returnShape: new Error("foo shape")
+      });
+      expect(resp.data).toMatchObject({
+        returnShape: null,
+        returnString: expect.toBeString()
+      });
+      expect(resp.errors).toStrictEqual([new GraphQLError("foo shape")]);
+    });
+
+    test("can provide Errors for lists (one error among list items)", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnStringList
+          returnString
+        }
+      `;
+      const resp: any = mock(schema, testQuery, {
+        returnStringList: ["Whiskey", new Error("foo Tango"), "Foxtrot"]
+      });
+      expect(resp.data).toMatchObject({
+        returnStringList: ["Whiskey", null, "Foxtrot"],
+        returnString: expect.toBeString()
+      });
+      expect(resp.errors).toStrictEqual([new GraphQLError("foo Tango")]);
+    });
+
+    test("can provide Errors for unions", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnBirdsAndBees {
+            __typename
+            id
+          }
+          returnString
+        }
+      `;
+      const resp: any = mock(schema, testQuery, {
+        returnBirdsAndBees: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }]
+      });
+      expect(resp.data).toMatchObject({
+        returnBirdsAndBees: [
+          { __typename: "Bird", id: expect.toBeString() },
+          null,
+          { __typename: "Bee", id: expect.toBeString() }
+        ],
+        returnString: expect.toBeString()
+      });
+      expect(resp.errors).toStrictEqual([new GraphQLError("foo Tango")]);
+    });
+    test("can provide Errors for interfaces", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnFlying {
+            __typename
+            id
+          }
+          returnString
+        }
+      `;
+      const resp: any = mock(schema, testQuery, {
+        returnFlying: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }]
+      });
+      expect(resp.data).toMatchObject({
+        returnFlying: [
+          { __typename: "Bird", id: expect.toBeString() },
+          null,
+          { __typename: "Bee", id: expect.toBeString() }
+        ],
+        returnString: expect.toBeString()
+      });
+      expect(resp.errors).toStrictEqual([new GraphQLError("foo Tango")]);
+    });
+    test("can throw errors in functions as resolver", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            id
+          }
+          returnString
+        }
+      `;
+      const resp: any = mock(schema, testQuery, {
+        returnShape: () => {
+          throw new Error("foo shape");
+        }
+      });
+      expect(resp.data).toMatchObject({
+        returnShape: null,
+        returnString: expect.toBeString()
+      });
+      expect(resp.errors).toStrictEqual([new GraphQLError("foo shape")]);
+    });
   });
 
   test("base case - TBD remove this test later", () => {
