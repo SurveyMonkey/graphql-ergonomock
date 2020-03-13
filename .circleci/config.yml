@@ -3,7 +3,7 @@ orbs:
   node: circleci/node@1.1.6
   codecov: codecov/codecov@1.0.5
 jobs:
-  build-and-test:
+  build-test-release:
     executor:
       name: node/default
     steps:
@@ -21,21 +21,8 @@ jobs:
                 path: reports/junit
             - codecov/upload:
                 file: coverage/coverage-final.json
-  # release:
-  #   branches:
-  #     only: master
-  #   steps:
-  #     - checkout
-  #     - node/with-cache:
-  #         steps:
-  #           - run: yarn install
-  #           - run: yarn build
-  #           - run: yarn run semantic-release
-
+            - run: yarn run semantic-release
 workflows:
     pipeline:
       jobs:
-        - build-and-test
-        # - release:
-        #     requires:
-        #       - build-and-test
+        - build-test-release
