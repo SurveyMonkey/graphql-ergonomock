@@ -70,6 +70,7 @@ This library provides a developer-friendly method to mock your GraphQL requests.
 ```js
 import { mock } from 'graphql-ergonomock';
 
+// Given a particular GraphQL Schema, ...
 const schema = gql`
   type Shape {
     id: ID!
@@ -83,6 +84,7 @@ const schema = gql`
   }
 `;
 
+// ...a GraphQL query, ...
 const query = gql`
 {
   getShape {
@@ -98,6 +100,7 @@ const query = gql`
 }
 `;
 
+// ...and a partial, possibly nested shape of data...
 const mocks = {
   getShape: {
     nestedShape: {
@@ -109,6 +112,7 @@ const mocks = {
   }
 };
 
+// ... provides the expected object filled with mock data
 const resp = mock(schema, query, mocks);
 expect(resp.data).toMatchObject({
   id: expect.toBeString(),
@@ -123,7 +127,6 @@ expect(resp.data).toMatchObject({
 ```
 
 ### Built With
-This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 * [Typescript](https://www.typescriptlang.org/)
 * [GraphQL](https://graphql.org)
 * [Jest](https://jestjs.io)
