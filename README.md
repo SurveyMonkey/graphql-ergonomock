@@ -73,7 +73,7 @@ This library provides a developer-friendly method to mock your GraphQL requests.
 ### Basic Example
 
 ```js
-import { mock } from 'graphql-ergonomock';
+import { ergonomock } from 'graphql-ergonomock';
 
 // Given a particular GraphQL Schema, ...
 const schema = gql`
@@ -118,7 +118,7 @@ const mocks = {
 };
 
 // ... provides the expected object filled with mock data
-const resp = mock(schema, query, mocks);
+const resp = ergonomock(schema, query, mocks);
 expect(resp.data).toMatchObject({
   id: expect.toBeString(),
   nestedShape: {
@@ -173,7 +173,7 @@ const testQuery = gql`
   }
 `;
 
-const resp = mock(schema, testQuery, {
+const resp = ergonomock(schema, testQuery, {
   getCar: () => { throw new Error("Server Error"); }
   // or simply getCar: new Error("Server Error")
 });

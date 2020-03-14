@@ -2,6 +2,21 @@
 # yarn lockfile v1
 
 
+"@apollo/client@^3.0.0-beta.41":
+  version "3.0.0-beta.41"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/@apollo/client/-/client-3.0.0-beta.41.tgz#37769f95d4829f2af884e76442401a31ac9d9238"
+  integrity sha1-N3afldSCnyr4hOdkQkAaMaydkjg=
+  dependencies:
+    "@types/zen-observable" "^0.8.0"
+    "@wry/equality" "^0.1.9"
+    fast-json-stable-stringify "^2.0.0"
+    graphql-tag "^2.10.2"
+    optimism "^0.11.5"
+    symbol-observable "^1.2.0"
+    ts-invariant "^0.4.4"
+    tslib "^1.10.0"
+    zen-observable "^0.8.14"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.8.3.tgz#33e25903d7481181534e12ec0a25f16b6fcf419e"
@@ -663,6 +678,19 @@
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
+"@types/prop-types@*":
+  version "15.7.3"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/@types/prop-types/-/prop-types-15.7.3.tgz#2ab0d5da2e5815f94b0b9d4b95d1e5f243ab2ca7"
+  integrity sha1-KrDV2i5YFflLC51LldHl8kOrLKc=
+
+"@types/react@^16.9.23":
+  version "16.9.23"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/@types/react/-/react-16.9.23.tgz#1a66c6d468ba11a8943ad958a8cb3e737568271c"
+  integrity sha1-GmbG1Gi6EaiUOtlYqMs+c3VoJxw=
+  dependencies:
+    "@types/prop-types" "*"
+    csstype "^2.2.0"
+
 "@types/retry@^0.12.0":
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
@@ -692,7 +720,19 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@wry/equality@^0.1.2":
+"@types/zen-observable@^0.8.0":
+  version "0.8.0"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/@types/zen-observable/-/zen-observable-0.8.0.tgz#8b63ab7f1aa5321248aad5ac890a485656dcea4d"
+  integrity sha1-i2OrfxqlMhJIqtWsiQpIVlbc6k0=
+
+"@wry/context@^0.5.0":
+  version "0.5.0"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/@wry/context/-/context-0.5.0.tgz#5ff84d0d5726b62c07045af8465f890eb3823c8c"
+  integrity sha1-X/hNDVcmtiwHBFr4Rl+JDrOCPIw=
+  dependencies:
+    tslib "^1.9.3"
+
+"@wry/equality@^0.1.2", "@wry/equality@^0.1.9":
   version "0.1.9"
   resolved "https://registry.yarnpkg.com/@wry/equality/-/equality-0.1.9.tgz#b13e18b7a8053c6858aa6c85b54911fb31e3a909"
   integrity sha512-mB6ceGjpMGz1ZTza8HYnrPGos2mC6So4NhS1PtZ8s4Qt0K7fBiIGhpSxUbQmhwcSWE3no+bYxmI2OL6KuXYmoQ==
@@ -1682,6 +1722,11 @@ cssstyle@^2.0.0:
   dependencies:
     cssom "~0.3.6"
 
+csstype@^2.2.0:
+  version "2.6.9"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/csstype/-/csstype-2.6.9.tgz#05141d0cd557a56b8891394c1911c40c8a98d098"
+  integrity sha1-BRQdDNVXpWuIkTlMGRHEDIqY0Jg=
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
@@ -2571,6 +2616,11 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.3.tgz#4a12ff1b60376ef09862c2093edd908328be8423"
   integrity sha512-a30VEBm4PEdx1dRB7MFK7BejejvCvBronbLjht+sHuGYj8PHs7M/5Z+rt5lw551vZ7yfTCj4Vuyy3mSJytDWRQ==
+
+graphql-tag@^2.10.2:
+  version "2.10.3"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/graphql-tag/-/graphql-tag-2.10.3.tgz#ea1baba5eb8fc6339e4c4cf049dabe522b0edf03"
+  integrity sha1-6hurpeuPxjOeTEzwSdq+UisO3wM=
 
 graphql-tools@^4.0.7:
   version "4.0.7"
@@ -3664,7 +3714,7 @@ jest@25.1.0:
     import-local "^3.0.2"
     jest-cli "^25.1.0"
 
-js-tokens@^4.0.0:
+"js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
@@ -4128,6 +4178,13 @@ lolex@^5.0.0:
   integrity sha512-h4hmjAvHTmd+25JSwrtTIuwbKdwg5NzZVRMLn9saij4SZaepCrTCxPr35H/3bjwfMJtN+t3CX8672UIkglz28A==
   dependencies:
     "@sinonjs/commons" "^1.7.0"
+
+loose-envify@^1.1.0, loose-envify@^1.4.0:
+  version "1.4.0"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
+  integrity sha1-ce5R+nvkyuwaY4OffmgtgTLTDK8=
+  dependencies:
+    js-tokens "^3.0.0 || ^4.0.0"
 
 loud-rejection@^1.0.0:
   version "1.6.0"
@@ -4856,7 +4913,7 @@ oauth-sign@~0.9.0:
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
   integrity sha512-fexhUFFPTGV8ybAtSIGbV6gOkSv8UtRbDBnAyLQw4QPKkgNlsH2ByPGtMUqdWkos6YCRmAqViwgZrJc/mRDzZQ==
 
-object-assign@^4.1.0:
+object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
@@ -4930,6 +4987,13 @@ opener@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.1.tgz#6d2f0e77f1a0af0032aca716c2c1fbb8e7e8abed"
   integrity sha512-goYSy5c2UXE4Ra1xixabeVh1guIX/ZV/YokJksb6q2lubWu6UbvPQ20p542/sFIll1nl8JnCyK9oBaOcCWXwvA==
+
+optimism@^0.11.5:
+  version "0.11.5"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/optimism/-/optimism-0.11.5.tgz#4c5d45fa0fa1cc9dcf092729b5d6d661b53ff5c9"
+  integrity sha1-TF1F+g+hzJ3PCScptdbWYbU/9ck=
+  dependencies:
+    "@wry/context" "^0.5.0"
 
 optimist@^0.6.1:
   version "0.6.1"
@@ -5374,6 +5438,15 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
+prop-types@^15.6.2:
+  version "15.7.2"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
+  integrity sha1-UsQedbjIfnK52TYOAga5ncv/psU=
+  dependencies:
+    loose-envify "^1.4.0"
+    object-assign "^4.1.1"
+    react-is "^16.8.1"
+
 proto-list@~1.2.1:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
@@ -5475,10 +5548,19 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-is@^16.12.0, react-is@^16.8.4:
+react-is@^16.12.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.13.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.0.tgz#0f37c3613c34fe6b37cd7f763a0d6293ab15c527"
   integrity sha512-GFMtL0vHkiBv9HluwNZTggSn/sCyEt9n02aM0dSAjGGyqyNlAyftYm4phPxdvCigG15JreC5biwxCgTAJZ7yAA==
+
+react@^16.13.0:
+  version "16.13.0"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/react/-/react-16.13.0.tgz#d046eabcdf64e457bbeed1e792e235e1b9934cf7"
+  integrity sha1-0EbqvN9k5Fe77tHnkuI14bmTTPc=
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
 
 read-cmd-shim@^1.0.1, read-cmd-shim@^1.0.5:
   version "1.0.5"
@@ -6435,6 +6517,11 @@ supports-hyperlinks@^2.0.0:
     has-flag "^4.0.0"
     supports-color "^7.0.0"
 
+symbol-observable@^1.2.0:
+  version "1.2.0"
+  resolved "https://npm.corp.surveymonkey.com:443/artifactory/api/npm/npm-virt/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
+  integrity sha1-wiaIrtTqs83C3+rLtWFmBWCgCAQ=
+
 symbol-tree@^3.2.2:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
@@ -6617,7 +6704,7 @@ trim-off-newlines@^1.0.0:
   resolved "https://registry.yarnpkg.com/trim-off-newlines/-/trim-off-newlines-1.0.1.tgz#9f9ba9d9efa8764c387698bcbfeb2c848f11adb3"
   integrity sha1-n5up2e+odkw4dpi8v+sshI8RrbM=
 
-ts-invariant@^0.4.0:
+ts-invariant@^0.4.0, ts-invariant@^0.4.4:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/ts-invariant/-/ts-invariant-0.4.4.tgz#97a523518688f93aafad01b0e80eb803eb2abd86"
   integrity sha512-uEtWkFM/sdZvRNNDL3Ehu4WVpwaulhwQszV8mrtcdeE8nN00BV9mAmQ88RkrBhFgl9gMgvjJLAQcZbnPXI9mlA==
@@ -7206,7 +7293,7 @@ zen-observable-ts@^0.8.20:
     tslib "^1.9.3"
     zen-observable "^0.8.0"
 
-zen-observable@^0.8.0:
+zen-observable@^0.8.0, zen-observable@^0.8.14:
   version "0.8.15"
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.15.tgz#96415c512d8e3ffd920afd3889604e30b9eaac15"
   integrity sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==
