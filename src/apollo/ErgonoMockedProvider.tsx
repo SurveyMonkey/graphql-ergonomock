@@ -32,7 +32,7 @@ export default function ErgonoMockedProvider(props: ErgonoMockedProviderProps) {
       resolvers
     });
     setClient(c);
-    return () => ((client as unknown) as ApolloClient<any>).stop();
+    return () => client && ((client as unknown) as ApolloClient<any>).stop();
   }, [mocks, addTypename, link, cache, defaultOptions]);
 
   if (!client) {

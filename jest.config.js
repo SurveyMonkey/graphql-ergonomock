@@ -4,7 +4,7 @@ module.exports = {
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
-  setupFilesAfterEnv: ["jest-extended"],
+  setupFilesAfterEnv: ["jest-extended", "@testing-library/jest-dom"],
   globals: {
     "ts-jest": {
       diagnostics: false
