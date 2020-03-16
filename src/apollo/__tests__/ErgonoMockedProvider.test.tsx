@@ -39,8 +39,9 @@ const ChildB = (props): ReactElement => {
 };
 
 test("Can render a nested tree of components with appropriate mocking", async () => {
+  const spy = jest.fn();
   const { findByText } = render(
-    <MockedProvider schema={schema}>
+    <MockedProvider schema={schema} mocks={[]} onCall={spy}>
       <Parent/>
     </MockedProvider>
   );

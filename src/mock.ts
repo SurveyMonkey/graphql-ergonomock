@@ -13,7 +13,8 @@ import {
   GraphQLFieldResolver,
   GraphQLList,
   GraphQLEnumType,
-  isObjectType
+  isObjectType,
+  DocumentNode
 } from "graphql";
 import getRandomElement from "./utils/getRandomElement";
 import forEachFieldInQuery from "./utils/forEachFieldInQuery";
@@ -25,10 +26,22 @@ defaultMockMap.set("String", () => "Hello World");
 defaultMockMap.set("Boolean", () => Math.random() > 0.5);
 defaultMockMap.set("ID", () => "123456");
 
-export function ergonomock(schema: GraphQLSchema, query: string, partialMock?: any, options?: any) {
-  const document = parse(query);
+export type ErgonoMockShape = {
+  [k: string]: string | boolean | number | null | GraphQLFieldResolver<any, any> | ErgonoMockShape;
+};
 
-  const mockResolverFunction = function(type: GraphQLType, typeName?: string, fieldName?: string) {
+export function ergonomock(
+  schema: GraphQLSchema,
+  query: string | DocumentNode,
+  partialMock?: ErgonoMockShape
+) {
+  const document = typeof query === "string" ? parse(query) : query;
+
+  const mockResolverFunction = function(
+    type: GraphQLType,
+    typeName?: string,
+    fieldName?: string
+  ): GraphQLFieldResolver<ErgonoMockShape, any> {
     // TODO: clean up this comment, which was taken as-is from apollo
     // order of precendence for mocking:
     // 1. if the object passed in already has fieldName, just use that
@@ -37,12 +50,7 @@ export function ergonomock(schema: GraphQLSchema, query: string, partialMock?: a
     // 2. if the nullableType is a list, recurse
     // 2. if there's a mock defined for this typeName, that will be used
     // 3. if there's no mock defined, use the default mocks for this type
-    return (
-      root: any,
-      args: { [key: string]: any },
-      context: any,
-      info: GraphQLResolveInfo
-    ): any => {
+    return (root, args, context, info) => {
       // nullability doesn't matter for the purpose of mocking.
       const fieldType = getNullableType(type) as GraphQLNullableType;
       const namedFieldType = getNamedType(fieldType);
@@ -105,14 +113,9 @@ export function ergonomock(schema: GraphQLSchema, query: string, partialMock?: a
     );
 
     if (isOnQueryType || isOnMutationType) {
-      mockResolver = (
-        root: any,
-        args: { [key: string]: any },
-        context: any,
-        info: GraphQLResolveInfo
-      ) => {
+      mockResolver = (root, args, context, info) => {
         return mockResolverFunction(field.type, typeName, fieldName)(
-          partialMock,
+          partialMock || {},
           args,
           context,
           info
