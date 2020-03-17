@@ -46,5 +46,14 @@ test("Can render a nested tree of components with appropriate mocking", async ()
     </MockedProvider>
   );
 
-  expect(await findByText(/Hello World/)).toBeVisible();
+  expect(await findByText(/returnString: Hello World/)).toBeVisible();
+  expect(await findByText(/returnInt: -?[0-9]+/)).toBeVisible();
+  const { operation, response } = spy.mock.calls[0][0];
+  expect(operation.operationName).toEqual('OperationA');
+  expect(operation.variables).toEqual({});
+  expect(response).toMatchObject({
+    data: {
+      returnString: expect.toBeString()
+    }
+  })
 });
