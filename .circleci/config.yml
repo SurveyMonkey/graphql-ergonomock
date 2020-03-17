@@ -21,7 +21,7 @@ jobs:
             - run:
               name: Upload Coverage Results
               command: |
-                curl -s << parameters.url >> | bash -s -- \
+                curl -s https://codecov.io/bash | bash -s -- \
                   -f "coverage/coverage-final.json" \
                   -t "${CODECOV_TOKEN}" \
                   -n "${CIRCLE_BUILD_NUM}" \
