@@ -19,14 +19,14 @@ jobs:
             - store_test_results:
                 path: reports/junit
             - run:
-              name: Upload Coverage Results
-              command: |
-                curl -s https://codecov.io/bash | bash -s -- \
-                  -f "coverage/coverage-final.json" \
-                  -t "${CODECOV_TOKEN}" \
-                  -n "${CIRCLE_BUILD_NUM}" \
-                  -y ".codecov.yml" \
-                  -Z || echo 'Codecov upload failed'
+                name: Upload Coverage Results
+                command: |
+                  curl -s https://codecov.io/bash | bash -s -- \
+                    -f "coverage/coverage-final.json" \
+                    -t "${CODECOV_TOKEN}" \
+                    -n "${CIRCLE_BUILD_NUM}" \
+                    -y ".codecov.yml" \
+                    -Z || echo 'Codecov upload failed'
             - run: yarn run semantic-release
 workflows:
     pipeline:
