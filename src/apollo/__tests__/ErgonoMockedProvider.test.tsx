@@ -27,21 +27,10 @@ const ChildA = (props): ReactElement => {
   return <div>Component ChildA. returnString: {data.returnString} returnInt: {data.returnInt} </div>;
 };
 
-const QUERY_B = gql`
-  query OperationB {
-    returnEnum
-    returnFloat
-  }
-`;
-
-const ChildB = (props): ReactElement => {
-  return <div></div>;
-};
-
 test("Can render a nested tree of components with appropriate mocking", async () => {
   const spy = jest.fn();
   const { findByText } = render(
-    <MockedProvider schema={schema} mocks={[]} onCall={spy}>
+    <MockedProvider schema={schema} onCall={spy}>
       <Parent/>
     </MockedProvider>
   );
@@ -53,7 +42,8 @@ test("Can render a nested tree of components with appropriate mocking", async ()
   expect(operation.variables).toEqual({});
   expect(response).toMatchObject({
     data: {
-      returnString: expect.toBeString()
+      returnString: expect.toBeString(),
+      returnInt: expect.toBeNumber()
     }
   })
 });
