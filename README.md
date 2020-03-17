@@ -20,8 +20,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/joual/graphql-ergonomock">
-    <!-- <img src="images/logo.png" alt="Logo" width="80" height="80"> -->
+  <a href="https://github.com/SurveyMonkey/graphql-ergonomock">
   </a>
 
   <h3 align="center">GraphQL Ergonomock</h3>
@@ -29,9 +28,9 @@
   <p align="center">
     Developer-friendly automock for GraphQL
     <br />
-    <a href="https://github.com/joual/graphql-ergonomock/issues">Report Bug</a>
+    <a href="https://github.com/SurveyMonkey/graphql-ergonomock/issues">Report Bug</a>
     ·
-    <a href="https://github.com/joual/graphql-ergonomock/issues">Request Feature</a>
+    <a href="https://github.com/SurveyMonkey/graphql-ergonomock/issues">Request Feature</a>
   </p>
 </p>
 
@@ -189,7 +188,7 @@ TBD
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/joual/graphql-ergonomock/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/SurveyMonkey/graphql-ergonomock/issues) for a list of proposed features (and known issues).
 
 
 
@@ -218,7 +217,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Maintainer: Joel Marcotte (Github @joual)
 
-Project Link: [https://github.com/joual/graphql-ergonomock](https://github.com/joual/graphql-ergonomock)
+Project Link: [https://github.com/SurveyMonkey/graphql-ergonomock](https://github.com/SurveyMonkey/graphql-ergonomock)
 
 
 
@@ -232,18 +231,17 @@ Project Link: [https://github.com/joual/graphql-ergonomock](https://github.com/j
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/joual/graphql-ergonomock.svg?style=flat-square
-[contributors-url]: https://github.com/joual/graphql-ergonomock/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/joual/graphql-ergonomock.svg?style=flat-square
-[forks-url]: https://github.com/joual/graphql-ergonomock/network/members
-[stars-shield]: https://img.shields.io/github/stars/joual/graphql-ergonomock.svg?style=flat-square
-[stars-url]: https://github.com/joual/graphql-ergonomock/stargazers
-[issues-shield]: https://img.shields.io/github/issues/joual/graphql-ergonomock.svg?style=flat-square
-[issues-url]: https://github.com/joual/graphql-ergonomock/issues
-[license-shield]: https://img.shields.io/github/license/joual/graphql-ergonomock.svg?style=flat-square
-[license-url]: https://github.com/joual/graphql-ergonomock/blob/master/LICENSE.txt
-[circleci-shield]: https://circleci.com/gh/joual/graphql-ergonomock.svg?style=shield
-[circleci-url]: https://app.circleci.com/pipelines/github/joual/graphql-ergonomock
-[codecov-shield]: https://codecov.io/gh/joual/graphql-ergonomock/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/joual/graphql-ergonomock
-[product-screenshot]: images/screenshot.png
+[contributors-shield]: https://img.shields.io/github/contributors/SurveyMonkey/graphql-ergonomock.svg?style=flat-square
+[contributors-url]: https://github.com/SurveyMonkey/graphql-ergonomock/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/SurveyMonkey/graphql-ergonomock.svg?style=flat-square
+[forks-url]: https://github.com/SurveyMonkey/graphql-ergonomock/network/members
+[stars-shield]: https://img.shields.io/github/stars/SurveyMonkey/graphql-ergonomock.svg?style=flat-square
+[stars-url]: https://github.com/SurveyMonkey/graphql-ergonomock/stargazers
+[issues-shield]: https://img.shields.io/github/issues/SurveyMonkey/graphql-ergonomock.svg?style=flat-square
+[issues-url]: https://github.com/SurveyMonkey/graphql-ergonomock/issues
+[license-shield]: https://img.shields.io/github/license/SurveyMonkey/graphql-ergonomock.svg?style=flat-square
+[license-url]: https://github.com/SurveyMonkey/graphql-ergonomock/blob/master/LICENSE.txt
+[circleci-shield]: https://circleci.com/gh/SurveyMonkey/graphql-ergonomock.svg?style=shield
+[circleci-url]: https://app.circleci.com/pipelines/github/SurveyMonkey/graphql-ergonomock
+[codecov-shield]: https://codecov.io/gh/SurveyMonkey/graphql-ergonomock/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/SurveyMonkey/graphql-ergonomock
