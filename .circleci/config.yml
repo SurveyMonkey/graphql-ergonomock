@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
-  codecov: codecov/codecov@1.0.5
 jobs:
   build-test-release:
     executor:
@@ -19,8 +18,15 @@ jobs:
                   JEST_JUNIT_OUTPUT_DIR: "reports/junit/js-test-results.xml"
             - store_test_results:
                 path: reports/junit
-            - codecov/upload:
-                file: coverage/coverage-final.json
+            - run:
+              name: Upload Coverage Results
+              command: |
+                curl -s << parameters.url >> | bash -s -- \
+                  -f "coverage/coverage-final.json" \
+                  -t "${CODECOV_TOKEN}" \
+                  -n "${CIRCLE_BUILD_NUM}" \
+                  -y ".codecov.yml" \
+                  -Z || echo 'Codecov upload failed'
             - run: yarn run semantic-release
 workflows:
     pipeline:
