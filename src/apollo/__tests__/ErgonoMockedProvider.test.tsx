@@ -29,7 +29,7 @@ const ChildA = ({ shapeId }: { shapeId: string }): ReactElement => {
 
   return (
     <div>
-      Component ChildA. returnString: {data.queryShape.returnString} returnInt:{" "}
+      Component ChildA. returnString:{" "}{data.queryShape.returnString} returnInt:{" "}
       {data.queryShape.returnInt}{" "}
     </div>
   );
@@ -43,9 +43,9 @@ test("Can render a nested tree of components with appropriate mocking", async ()
     </MockedProvider>
   );
 
-  expect(await findByText(/returnString: Hello World/)).toBeVisible();
   expect(await findByText(/returnInt: -?[0-9]+/)).toBeVisible();
   const { operation, response } = spy.mock.calls[0][0];
+  expect(await findByText(new RegExp(response.data.queryShape.returnString))).toBeVisible();
   expect(operation.operationName).toEqual("OperationA");
   expect(operation.variables).toEqual({});
   expect(response).toMatchObject({

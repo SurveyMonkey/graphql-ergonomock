@@ -16,15 +16,16 @@ import {
   isObjectType,
   DocumentNode
 } from "graphql";
+import faker from "faker";
 import getRandomElement from "./utils/getRandomElement";
 import forEachFieldInQuery from "./utils/forEachFieldInQuery";
 
 const defaultMockMap: Map<string, GraphQLFieldResolver<any, any>> = new Map();
-defaultMockMap.set("Int", () => Math.round(Math.random() * 200) - 100);
-defaultMockMap.set("Float", () => Math.random() * 200 - 100);
-defaultMockMap.set("String", () => "Hello World");
+defaultMockMap.set("Int", () => faker.random.number());
+defaultMockMap.set("Float", () => parseFloat(faker.finance.amount()));
+defaultMockMap.set("String", () => faker.lorem.words());
 defaultMockMap.set("Boolean", () => Math.random() > 0.5);
-defaultMockMap.set("ID", () => "123456");
+defaultMockMap.set("ID", () => faker.finance.account());
 
 export type ErgonoMockShape = {
   [k: string]: string | boolean | number | null | GraphQLFieldResolver<any, any> | ErgonoMockShape;
