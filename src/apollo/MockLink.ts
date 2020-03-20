@@ -7,10 +7,10 @@ type MockLinkOptions = {
   onCall?: MockLinkCallHandler;
 };
 
-export type ApolloErgonoMockContainer = {
-  operationName: string;
-  mock: ErgonoMockShape | ((operation: Operation) => ErgonoMockShape | null);
-};
+export type ApolloErgonoMockMap = Record<
+  string,
+  ErgonoMockShape | ((operation: Operation) => ErgonoMockShape | null)
+>;
 
 type MockLinkCallArg = {
   operation: Operation;
@@ -22,7 +22,7 @@ export type MockLinkCallHandler = (spyObj: MockLinkCallArg) => void;
 export default class MockLink extends ApolloLink {
   constructor(
     private schema: GraphQLSchema,
-    private mockContainers: ApolloErgonoMockContainer[],
+    private mockMap: ApolloErgonoMockMap,
     private options: MockLinkOptions = { addTypename: true }
   ) {
     super();
@@ -31,12 +31,9 @@ export default class MockLink extends ApolloLink {
   public request(operation: Operation): Observable<FetchResult> | null {
     // 1. Find mock by operation name
     // TODO: potentially merge multiple mocks with the same name.
-    const mockContainer = this.mockContainers.find(
-      m => m.operationName === operation.operationName
-    );
     let mock;
-    if (mockContainer) {
-      mock = mockContainer.mock;
+    if (this.mockMap[operation.operationName]) {
+      mock = this.mockMap[operation.operationName];
 
       // 2. If mock is a function, call it with variables.
       if (typeof mock === "function") {

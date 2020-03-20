@@ -69,6 +69,7 @@ const schemaSDL = /* GraphQL */ `
     returnListOfListOfIntArg(l: Int): [[Int]]
     returnListOfListOfObject: [[Bird!]]!
     returnStringArgument(s: String): String
+    queryShape(id: String): Shape
     node(id: String!): Flying
     node2(id: String!): BirdsAndBees
   }
