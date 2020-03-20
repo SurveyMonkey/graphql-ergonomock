@@ -1,90 +1,8 @@
-import { mock } from "..";
+import { ergonomock } from "..";
 import { buildSchemaFromTypeDefinitions } from "graphql-tools";
 import { visitWithTypeInfo, GraphQLError } from "graphql";
+import schema from "./schema";
 // import { graphql, GraphQLResolveInfo } from "graphql";
-
-const schemaSDL = /* GraphQL */ `
-  scalar MissingMockType
-  interface Flying {
-    id: String!
-    returnInt: Int
-  }
-  type Bird implements Flying {
-    id: String!
-    returnInt: Int
-    returnString: String
-    returnStringArgument(s: String): String
-  }
-  type Bee implements Flying {
-    id: String!
-    returnInt: Int
-    returnEnum: SomeEnum
-  }
-  union BirdsAndBees = Bird | Bee
-  enum SomeEnum {
-    A
-    B
-    C
-  }
-  type Shape {
-    id: String!
-    flying: [Flying]
-    birdsAndBees: [BirdsAndBees]
-    returnInt: Int
-    returnEnum: SomeEnum
-    returnFloat: Float
-    returnString: String
-    returnBoolean: Boolean
-    returnIntList: [Int]
-    returnEnumList: [SomeEnum]
-    returnFloatList: [Float]
-    returnStringList: [String]
-    returnBooleanList: [Boolean]
-    returnID: ID
-    returnIDList: [ID]
-    nestedShape: Shape
-    nestedShapeList: [Shape]
-  }
-  type RootQuery {
-    returnInt: Int
-    returnFloat: Float
-    returnString: String
-    returnBoolean: Boolean
-    returnID: ID
-    returnIDList: [ID]
-    returnIntList: [Int]
-    returnFloatList: [Float]
-    returnStringList: [String]
-    returnBooleanList: [Boolean]
-    returnShape: Shape
-    returnShapeList: [Shape]
-    returnEnum: SomeEnum
-    returnEnumList: [SomeEnum]
-    returnBirdsAndBees: [BirdsAndBees]
-    returnFlying: [Flying]
-    returnMockError: MissingMockType
-    returnNullableString: String
-    returnNonNullString: String!
-    returnObject: Bird
-    returnListOfInt: [Int]
-    returnListOfIntArg(l: Int): [Int]
-    returnListOfListOfInt: [[Int!]!]!
-    returnListOfListOfIntArg(l: Int): [[Int]]
-    returnListOfListOfObject: [[Bird!]]!
-    returnStringArgument(s: String): String
-    node(id: String!): Flying
-    node2(id: String!): BirdsAndBees
-  }
-  type RootMutation {
-    returnStringArgument(s: String): String
-  }
-  schema {
-    query: RootQuery
-    mutation: RootMutation
-  }
-`;
-
-const schema = buildSchemaFromTypeDefinitions(schemaSDL);
 
 describe("Automocking", () => {
   describe("Guardrails", () => {
@@ -105,7 +23,7 @@ describe("Automocking", () => {
           returnID
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data).toMatchObject({
         returnInt: expect.toBeNumber(),
         returnString: expect.toBeString(),
@@ -127,7 +45,7 @@ describe("Automocking", () => {
           returnIDList
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data).toMatchObject({
         returnIntList: expect.toBeArray(),
         returnStringList: expect.toBeArray(),
@@ -151,7 +69,7 @@ describe("Automocking", () => {
           returnEnum
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data).toMatchObject({
         returnEnum: expect.toBeOneOf(["A", "B", "C"])
       });
@@ -173,7 +91,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data.returnBirdsAndBees.length).toBeGreaterThan(0);
       expect(resp.data.returnBirdsAndBees.length).toBeLessThan(5);
       const firstType = resp.data.returnBirdsAndBees[0];
@@ -201,7 +119,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data.returnFlying.length).toBeGreaterThan(0);
       expect(resp.data.returnFlying.length).toBeLessThan(5);
       const firstType = resp.data.returnFlying[0];
@@ -221,7 +139,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data).toMatchObject({
         returnShape: {
           id: expect.toBeString(),
@@ -248,7 +166,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       const shape = resp.data.returnShape;
       expect(shape.id).toBeString();
       expect(shape.birdsAndBees.length).toBeGreaterThan(0);
@@ -281,7 +199,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       const shape = resp.data.returnShape;
       expect(shape.id).toBeString();
       expect(shape.flying.length).toBeGreaterThan(0);
@@ -307,7 +225,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data.returnShape).toMatchObject({
         returnInt: expect.toBeNumber(),
         returnString: expect.toBeString(),
@@ -326,7 +244,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data.returnShape).toMatchObject({
         returnEnum: expect.toBeOneOf(["A", "B", "C"])
       });
@@ -345,7 +263,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data.returnShape.nestedShape).toMatchObject({
         returnInt: expect.toBeNumber(),
         returnString: expect.toBeString(),
@@ -372,7 +290,7 @@ describe("Automocking", () => {
           }
         }
       `;
-      const resp: any = mock(schema, testQuery);
+      const resp: any = ergonomock(schema, testQuery);
       expect(resp.data.returnShape).toMatchObject({
         id: expect.toBeString(),
         returnInt: expect.toBeNumber(),
@@ -408,7 +326,7 @@ describe("Automocking", () => {
         returnFloat: 10.2,
         returnBoolean: false
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
 
       expect(resp).toMatchObject({
         data: {
@@ -434,7 +352,7 @@ describe("Automocking", () => {
         returnFloatList: [10.2, 10.2],
         returnBooleanList: [false]
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
 
       expect(resp).toMatchObject({
         data: {
@@ -456,7 +374,7 @@ describe("Automocking", () => {
       const mocks = {
         returnEnum: "A"
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
 
       expect(resp).toMatchObject({
         data: {
@@ -481,7 +399,7 @@ describe("Automocking", () => {
       const mocks = {
         returnEnumList: ["A", "C"]
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
 
       expect(resp).toMatchObject({
         data: {
@@ -506,7 +424,7 @@ describe("Automocking", () => {
       const mocks = {
         returnEnum: "D"
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
       expect(resp.errors[0].message).toBe('Expected a value of type "SomeEnum" but received: "D"');
       expect(resp).toMatchObject({
         data: {
@@ -554,7 +472,7 @@ describe("Automocking", () => {
           }
         }
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
       expect(resp).toMatchObject({
         data: {
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
@@ -650,7 +568,7 @@ describe("Automocking", () => {
           }
         ]
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
       expect(resp).toMatchObject({
         data: {
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
@@ -744,7 +662,7 @@ describe("Automocking", () => {
           { __typename: "Bee", returnEnum: "B" }
         ]
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
       expect(resp).toMatchObject({
         data: {
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
@@ -781,7 +699,7 @@ describe("Automocking", () => {
           { __typename: "Bee", returnEnum: "B" }
         ]
       };
-      const resp: any = mock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, mocks);
       expect(resp).toMatchObject({
         data: {
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
@@ -820,7 +738,7 @@ describe("Automocking", () => {
           }
         }
       };
-      const resp: any = mock(schema, testQuery, mocks);
+      const resp: any = ergonomock(schema, testQuery, mocks);
       expect(resp.data.returnShape).toMatchObject({
         id: expect.toBeString(),
         returnInt: 4,
@@ -858,7 +776,7 @@ describe("Automocking", () => {
           }
         }
       };
-      const resp: any = mock(schema, testQuery, mocks);
+      const resp: any = ergonomock(schema, testQuery, mocks);
       expect(resp.data.returnShape.nestedShape).toMatchObject({
         returnIntList: expect.toBeArray(),
         returnStringList: expect.toBeArray(),
@@ -906,7 +824,7 @@ describe("Automocking", () => {
           }
         }
       };
-      const resp: any = mock(schema, testQuery, mocks);
+      const resp: any = ergonomock(schema, testQuery, mocks);
       expect(resp.data.returnShape.nestedShape.returnInt).toBe(1234);
       expect(rootReturnIntValue).toBe(4321);
       expect(resp.data.returnShape.returnInt).toBe(4321);
@@ -921,7 +839,7 @@ describe("Automocking", () => {
           returnString
         }
       `;
-      const resp: any = mock(schema, testQuery, {
+      const resp: any = ergonomock(schema, testQuery, {
         returnInt: new Error("foo bar")
       });
       expect(resp.data).toMatchObject({
@@ -938,7 +856,7 @@ describe("Automocking", () => {
           returnString
         }
       `;
-      const resp: any = mock(schema, testQuery, {
+      const resp: any = ergonomock(schema, testQuery, {
         returnEnum: new Error("foo enum")
       });
       expect(resp.data).toMatchObject({
@@ -957,7 +875,7 @@ describe("Automocking", () => {
           returnString
         }
       `;
-      const resp: any = mock(schema, testQuery, {
+      const resp: any = ergonomock(schema, testQuery, {
         returnShape: new Error("foo shape")
       });
       expect(resp.data).toMatchObject({
@@ -974,7 +892,7 @@ describe("Automocking", () => {
           returnString
         }
       `;
-      const resp: any = mock(schema, testQuery, {
+      const resp: any = ergonomock(schema, testQuery, {
         returnStringList: ["Whiskey", new Error("foo Tango"), "Foxtrot"]
       });
       expect(resp.data).toMatchObject({
@@ -994,7 +912,7 @@ describe("Automocking", () => {
           returnString
         }
       `;
-      const resp: any = mock(schema, testQuery, {
+      const resp: any = ergonomock(schema, testQuery, {
         returnBirdsAndBees: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }]
       });
       expect(resp.data).toMatchObject({
@@ -1017,7 +935,7 @@ describe("Automocking", () => {
           returnString
         }
       `;
-      const resp: any = mock(schema, testQuery, {
+      const resp: any = ergonomock(schema, testQuery, {
         returnFlying: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }]
       });
       expect(resp.data).toMatchObject({
@@ -1039,7 +957,7 @@ describe("Automocking", () => {
           returnString
         }
       `;
-      const resp: any = mock(schema, testQuery, {
+      const resp: any = ergonomock(schema, testQuery, {
         returnShape: () => {
           throw new Error("foo shape");
         }
@@ -1080,7 +998,7 @@ describe("Automocking", () => {
       ]
     };
 
-    const resp: any = mock(schema, query, mocks);
+    const resp: any = ergonomock(schema, query, mocks);
 
     expect(resp).toMatchObject({
       data: {
