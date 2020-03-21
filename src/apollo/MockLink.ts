@@ -1,6 +1,7 @@
 import { ApolloLink, Operation, Observable, FetchResult, ExecutionResult } from "@apollo/client";
 import { ErgonoMockShape, ergonomock } from "../mock";
 import { GraphQLSchema } from "graphql";
+import stringify from "fast-json-stable-stringify";
 
 type MockLinkOptions = {
   addTypename: Boolean;
@@ -41,8 +42,13 @@ export default class MockLink extends ApolloLink {
       }
     }
 
+    const seed = stringify({
+      query: operation.query,
+      variables: operation.variables,
+      operationName: operation.operationName
+    });
     // 3. Call ergonomock() to get results
-    const result = ergonomock(this.schema, operation.query, mock || {});
+    const result = ergonomock(this.schema, operation.query, mock || {}, seed);
 
     // 4. Return Observer
     return new Observable(observer => {
