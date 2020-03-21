@@ -3,17 +3,17 @@ import { buildSchemaFromTypeDefinitions } from "graphql-tools";
 const schemaSDL = /* GraphQL */ `
   scalar MissingMockType
   interface Flying {
-    id: String!
+    id: ID!
     returnInt: Int
   }
   type Bird implements Flying {
-    id: String!
+    id: ID!
     returnInt: Int
     returnString: String
     returnStringArgument(s: String): String
   }
   type Bee implements Flying {
-    id: String!
+    id: ID!
     returnInt: Int
     returnEnum: SomeEnum
   }
@@ -24,7 +24,7 @@ const schemaSDL = /* GraphQL */ `
     C
   }
   type Shape {
-    id: String!
+    id: ID!
     flying: [Flying]
     birdsAndBees: [BirdsAndBees]
     returnInt: Int

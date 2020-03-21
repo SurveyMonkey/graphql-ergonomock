@@ -305,7 +305,33 @@ describe("Automocking", () => {
     });
 
     test.todo("can provide field mock override");
-    test.todo("automocking of lists are deterministic on some seed");
+    test("automocking of elements are deterministic on some seed", () => {
+      const query = /* GraphQL */ `
+        fragment ShapeParts on Shape {
+          returnInt
+          returnString
+          returnFloat
+        }
+        query SampleQuery {
+          returnIntList
+          returnStringList
+          returnFloatList
+          returnBooleanList
+          returnID
+          returnShape {
+            id
+            ...ShapeParts
+            nestedShape {
+              ...ShapeParts
+            }
+          }
+        }
+      `;
+
+      const resp: any = ergonomock(schema, query, {}, "this-is-the-randomizer-seed");
+      const resp2: any = ergonomock(schema, query, {}, "this-is-the-randomizer-seed");
+      expect(resp).toEqual(resp2);
+    });
   });
 
   describe("With partial mocks provided", () => {

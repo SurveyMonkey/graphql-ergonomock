@@ -247,7 +247,7 @@ const random = {
   },
 
   // max is exclusive
-  integer: (max: number = 100, min: number = 1) => Math.floor(random.float()),
+  integer: (max: number = 100, min: number = 1) => Math.floor(random.float(max, min)),
 
   // max is exclusive, min is inclusive
   float: (max: number = 100, min: number = 1) => rng() * (max - min) + min,

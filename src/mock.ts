@@ -79,10 +79,9 @@ export function ergonomock(
 
       // Lists
       if (fieldType instanceof GraphQLList) {
-        return [
-          mockResolverFunction(fieldType.ofType)(root, args, context, info),
-          mockResolverFunction(fieldType.ofType)(root, args, context, info)
-        ];
+        return random
+          .list()
+          .map(_ => mockResolverFunction(fieldType.ofType)(root, args, context, info));
       }
 
       // Unions and interfaces

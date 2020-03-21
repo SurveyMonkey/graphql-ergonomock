@@ -30,13 +30,13 @@ export default class MockLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    // 1. Find mock by operation name
+    // Find mock by operation name
     // TODO: potentially merge multiple mocks with the same name.
     let mock;
     if (this.mockMap[operation.operationName]) {
       mock = this.mockMap[operation.operationName];
 
-      // 2. If mock is a function, call it with variables.
+      //  If mock is a function, call it with variables.
       if (typeof mock === "function") {
         mock = mock(operation);
       }
@@ -47,16 +47,17 @@ export default class MockLink extends ApolloLink {
       variables: operation.variables,
       operationName: operation.operationName
     });
-    // 3. Call ergonomock() to get results
+
+    // Call ergonomock() to get results
     const result = ergonomock(this.schema, operation.query, mock || {}, seed);
 
-    // 4. Return Observer
+    // Return Observer to be compatible with apollo
     return new Observable(observer => {
       Promise.resolve(result).then(r => {
         if (r) {
           observer.next(r);
         }
-        // 5. Call onCall with the right signature before calling observer.next(result)
+        // Call onCall with the right signature before calling observer.next(result)
         if (this.options.onCall) {
           this.options.onCall({ operation, response: r });
         }
