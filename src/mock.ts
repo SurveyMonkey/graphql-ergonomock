@@ -16,15 +16,17 @@ import {
   isObjectType,
   DocumentNode
 } from "graphql";
+
+import random from "./utils/random";
 import getRandomElement from "./utils/getRandomElement";
 import forEachFieldInQuery from "./utils/forEachFieldInQuery";
 
 const defaultMockMap: Map<string, GraphQLFieldResolver<any, any>> = new Map();
-defaultMockMap.set("Int", () => Math.round(Math.random() * 200) - 100);
-defaultMockMap.set("Float", () => Math.random() * 200 - 100);
-defaultMockMap.set("String", () => "Hello World");
-defaultMockMap.set("Boolean", () => Math.random() > 0.5);
-defaultMockMap.set("ID", () => "123456");
+defaultMockMap.set("Int", () => random.integer());
+defaultMockMap.set("Float", () => random.float());
+defaultMockMap.set("String", () => random.words());
+defaultMockMap.set("Boolean", () => random.boolean());
+defaultMockMap.set("ID", () => `${random.integer(10000000, 100000)}`);
 
 export type ErgonoMockShape = {
   [k: string]: string | boolean | number | null | GraphQLFieldResolver<any, any> | ErgonoMockShape;
@@ -33,13 +35,15 @@ export type ErgonoMockShape = {
 export function ergonomock(
   schema: GraphQLSchema,
   query: string | DocumentNode,
-  partialMock?: ErgonoMockShape
+  mocks?: ErgonoMockShape,
+  mockSeed?: string
 ) {
+  random.seed(mockSeed);
   const document = typeof query === "string" ? parse(query) : query;
 
   const mockResolverFunction = function(
     type: GraphQLType,
-    typeName?: string,
+    typeName?: string, // TODO: get rid of this?
     fieldName?: string
   ): GraphQLFieldResolver<ErgonoMockShape, any> {
     // TODO: clean up this comment, which was taken as-is from apollo
@@ -53,7 +57,7 @@ export function ergonomock(
     return (root, args, context, info) => {
       // nullability doesn't matter for the purpose of mocking.
       const fieldType = getNullableType(type) as GraphQLNullableType;
-      const namedFieldType = getNamedType(fieldType);
+      const namedFieldType = getNamedType(fieldType); // TODO: get rid of this?
 
       if (root && fieldName && typeof root[fieldName] !== "undefined") {
         const mock = root[fieldName];
@@ -75,10 +79,9 @@ export function ergonomock(
 
       // Lists
       if (fieldType instanceof GraphQLList) {
-        return [
-          mockResolverFunction(fieldType.ofType)(root, args, context, info),
-          mockResolverFunction(fieldType.ofType)(root, args, context, info)
-        ];
+        return random
+          .list()
+          .map(_ => mockResolverFunction(fieldType.ofType)(root, args, context, info));
       }
 
       // Unions and interfaces
@@ -115,7 +118,7 @@ export function ergonomock(
     if (isOnQueryType || isOnMutationType) {
       mockResolver = (root, args, context, info) => {
         return mockResolverFunction(field.type, typeName, fieldName)(
-          partialMock || {},
+          mocks || {},
           args,
           context,
           info

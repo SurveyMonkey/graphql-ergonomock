@@ -1,6 +1,7 @@
 import { ApolloLink, Operation, Observable, FetchResult, ExecutionResult } from "@apollo/client";
 import { ErgonoMockShape, ergonomock } from "../mock";
 import { GraphQLSchema } from "graphql";
+import stringify from "fast-json-stable-stringify";
 
 type MockLinkOptions = {
   addTypename: Boolean;
@@ -29,28 +30,34 @@ export default class MockLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    // 1. Find mock by operation name
+    // Find mock by operation name
     // TODO: potentially merge multiple mocks with the same name.
     let mock;
     if (this.mockMap[operation.operationName]) {
       mock = this.mockMap[operation.operationName];
 
-      // 2. If mock is a function, call it with variables.
+      //  If mock is a function, call it with variables.
       if (typeof mock === "function") {
         mock = mock(operation);
       }
     }
 
-    // 3. Call ergonomock() to get results
-    const result = ergonomock(this.schema, operation.query, mock || {});
+    const seed = stringify({
+      query: operation.query,
+      variables: operation.variables,
+      operationName: operation.operationName
+    });
 
-    // 4. Return Observer
+    // Call ergonomock() to get results
+    const result = ergonomock(this.schema, operation.query, mock || {}, seed);
+
+    // Return Observer to be compatible with apollo
     return new Observable(observer => {
       Promise.resolve(result).then(r => {
         if (r) {
           observer.next(r);
         }
-        // 5. Call onCall with the right signature before calling observer.next(result)
+        // Call onCall with the right signature before calling observer.next(result)
         if (this.options.onCall) {
           this.options.onCall({ operation, response: r });
         }
