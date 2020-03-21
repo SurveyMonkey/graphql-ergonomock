@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { render } from "@testing-library/react";
+import { render, cleanup } from "@testing-library/react";
 import { gql, useQuery } from "@apollo/client";
 import schema from "../../__tests__/schema";
 import MockedProvider from "../ErgonoMockedProvider";
@@ -29,7 +29,7 @@ const ChildA = ({ shapeId }: { shapeId: string }): ReactElement => {
 
   return (
     <div>
-      Component ChildA. returnString:{" "}{data.queryShape.returnString} returnInt:{" "}
+      Component ChildA. returnString: {data.queryShape.returnString} returnInt:{" "}
       {data.queryShape.returnInt}{" "}
     </div>
   );
@@ -125,13 +125,13 @@ test("can mock the same operation multiple times in the same tree", async () => 
 test("can mock the same operation multiple times with a function", async () => {
   const spy = jest.fn();
   const mocks = {
-    OperationA: (operation) => {
+    OperationA: operation => {
       return {
         queryShape: {
           id: operation.variables.shapeId, // you need to return the ID to have separate cache entry
           returnString: `John Doe ${operation.variables.shapeId}`
         }
-      }
+      };
     }
   };
   const { findAllByText } = render(
@@ -158,4 +158,50 @@ test("can mock the same operation multiple times with a function", async () => {
       }
     }
   });
+});
+
+test("automocking is stable and deterministic per operation query, name and variable", async () => {
+  const spy1 = jest.fn();
+  const spy2 = jest.fn();
+  const { findByText } = render(
+    <MockedProvider schema={schema} onCall={spy1}>
+      <Parent shapeId="123" />
+    </MockedProvider>
+  );
+  await findByText(/returnString/);
+
+  cleanup();
+  const { findByText: fbt2 } = render(
+    <MockedProvider schema={schema} onCall={spy2}>
+      <Parent shapeId="123" />
+    </MockedProvider>
+  );
+
+  await fbt2(/returnString/);
+  const { response: r1 } = spy1.mock.calls[0][0];
+  const { response: r2 } = spy2.mock.calls[0][0];
+  expect(r1).toEqual(r2);
+});
+
+test("automocking is stable and deterministic per operation query, name and variable", async () => {
+  const spy1 = jest.fn();
+  const spy2 = jest.fn();
+  const { findByText } = render(
+    <MockedProvider schema={schema} onCall={spy1}>
+      <Parent shapeId="123" />
+    </MockedProvider>
+  );
+  await findByText(/returnString/);
+
+  cleanup();
+  const { findByText: fbt2 } = render(
+    <MockedProvider schema={schema} onCall={spy2}>
+      <Parent shapeId="124" />
+    </MockedProvider>
+  );
+
+  await fbt2(/returnString/);
+  const { response: r1 } = spy1.mock.calls[0][0];
+  const { response: r2 } = spy2.mock.calls[0][0];
+  expect(r1).not.toEqual(r2);
 });
