@@ -27,7 +27,7 @@ jobs:
                     -n "${CIRCLE_BUILD_NUM}" \
                     -y ".codecov.yml" \
                     -Z || echo 'Codecov upload failed'
-            - run: yarn run semantic-release
+            - run: yarn run semantic-release || echo 'failed semantic-release...'
 workflows:
     pipeline:
       jobs:
