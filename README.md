@@ -54,7 +54,7 @@
     - [Mocking Mutations](#mocking-mutations)
 - [API](#api)
   - [`ergonomock`](#ergonomock)
-  - [ErgonoMockedProvider](#ergonomockedprovider)
+  - [`<ErgonoMockedProvider>`](#ergonomockedprovider)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -69,9 +69,9 @@
 This library provides a developer-friendly method to mock your GraphQL requests. By default, it ships with the following features:
 
 * **Automatic mocking** of types and fields based on schema definition.
-* *Deterministic randomization* of mocked values based on the provided mock shape, to support usage of features such as snapshots.
-* Support for queries using *fragments, unions & interfaces*.
-* Allows usage of *functions as mock values*, which have the signature of a GraphQL resolver, and are resolved at runtime.
+* **Deterministic randomization** of mocked values based on the provided mock shape, to support usage of features such as snapshots.
+* Support for queries using **fragments, unions & interfaces**.
+* Allows usage of **functions as mock values**, which have the signature of a GraphQL resolver, and are resolved at runtime.
 
 ### Basic Example
 
@@ -237,7 +237,7 @@ test("I can mock a response", () => {
 
 #### ErgonoMockedProvider for Use with Apollo-Client
 
-If your app uses Apollo-Client, you can also use `ErgonoMockedProvider` which wraps `ergonomock()` in a stable & deterministic way based on the query name, shape, and variables (this is so you can leverage testing snapshots if you are so inclined).
+If your app uses Apollo-Client, you can also use `ErgonoMockedProvider` which wraps `ergonomock()`. The generated values are stable & deterministic based on the query name, shape, and variables (this is so you can leverage testing snapshots if you are so inclined).
 
 ```jsx
 import { ErgonoMockedProvider as MockedProvider } from 'graphql-ergonomock';
@@ -251,7 +251,7 @@ test("I can mock a response", () => {
   };
   const { findByText } = render(
     <MockedProvider schema={schema} mocks={mocks}>
-      <MyApp>
+      <MyApp />
     </MockedProvider>
   );
   expect(await findByText(/'123abc'/)).toBeVisible();
@@ -271,7 +271,7 @@ test("I can mock a response with a function", () => {
   };
   const { findAllByText } = render(
     <MockedProvider schema={schema} mocks={mocks}>
-      <MyApp>
+      <MyApp />
     </MockedProvider>
   );
   expect(await findAllByText(/'aaa00'/)).toHaveLength(3);
@@ -301,6 +301,8 @@ const mocks = {
 
 #### Mocking Errors
 
+You can return or throw errors within the mock shape.
+
 ```js
 const testQuery = gql`
   {
@@ -323,7 +325,36 @@ console.log(resp.errors[0]); // { message: "Server Error", ...}
 
 #### Mocking Mutations
 
-TBD
+You can mock mutations, but if you are using `ergonomock()` directly, you'll have to provide the correct variables for the operation in order for it to not fail.
+
+```jsx
+test("Can partially mock mutations", () => {
+  const query = /* GraphQL */ `
+    mutation SampleQuery($input: ShapeInput!) {
+      createShape(input: $input) {
+        id
+        returnInt
+        returnString
+      }
+    }
+  `;
+
+  const resp: any = ergonomock(schema, query, {
+    mocks: {
+      createShape: { id: "567" }
+    },
+    variables: {
+      input: { someID: "123", someInt: 123 }
+    }
+  });
+
+  expect(resp.data.createShape).toMatchObject({
+    id: "567",
+    returnInt: expect.toBeNumber(),
+    returnString: expect.toBeString()
+  });
+});
+```
 
 ## API
 
@@ -339,7 +370,7 @@ The `ergonomock(schema, query, options)` function takes 3 arguments
    3. `variables` is the variable values object used in the query or mutation.
 
 
-### ErgonoMockedProvider
+### `<ErgonoMockedProvider>`
 
 This component's props are very similar to Apollo-Client's [MockedProvider](https://www.apollographql.com/docs/react/api/react-testing/#mockedprovider). The only differences are:
 
@@ -371,14 +402,12 @@ Contributions are what make the open source community such an amazing place to b
 Distributed under the MIT License. See `LICENSE` for more information.
 
 
-
 <!-- CONTACT -->
 ## Contact
 
 Maintainer: Joel Marcotte (Github @joual)
 
 Project Link: [https://github.com/SurveyMonkey/graphql-ergonomock](https://github.com/SurveyMonkey/graphql-ergonomock)
-
 
 
 <!-- ACKNOWLEDGEMENTS -->
