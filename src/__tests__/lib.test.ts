@@ -6,10 +6,31 @@ import schema from "./schema";
 
 describe("Automocking", () => {
   describe("Guardrails", () => {
-    test.todo("it throws without a schema");
-    test.todo("it throws without a valid schema");
-    test.todo("it throws without a query");
-    test.todo("it throws without a valid query");
+    test("it throws without a schema", () => {
+      expect(() => {
+        (ergonomock as any)();
+      }).toThrowError("Ergonomock requires a valid GraphQL schema");
+    });
+    test("it throws without a valid schema", () => {
+      expect(() => {
+        (ergonomock as any)("foo", "bar");
+      }).toThrowError("Ergonomock requires a valid GraphQL schema");
+    });
+    test("it throws without a query", () => {
+      expect(() => {
+        (ergonomock as any)(schema);
+      }).toThrowError("Ergonomock requires a GraphQL query, either as a string or DocumentNode.");
+    });
+    test("it throws without a parseable query", () => {
+      expect(() => {
+        (ergonomock as any)(schema, "asdasd");
+      }).toThrowError("Syntax Error: Unexpected Name");
+    });
+    test("it throws without a valid query", () => {
+      expect(() => {
+        (ergonomock as any)(schema, "query { fooBar }");
+      }).toThrowError('Cannot query field "fooBar" on type "RootQuery".');
+    });
   });
 
   describe("No provided mocks", () => {
@@ -670,7 +691,9 @@ describe("Automocking", () => {
           returnEnum
           returnBirdsAndBees {
             __typename
-            returnInt
+            ... on Flying {
+              returnInt
+            }
             ... on Bird {
               returnString
             }
@@ -933,7 +956,9 @@ describe("Automocking", () => {
         {
           returnBirdsAndBees {
             __typename
-            id
+            ... on Flying {
+              id
+            }
           }
           returnString
         }

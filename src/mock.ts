@@ -14,7 +14,9 @@ import {
   GraphQLList,
   GraphQLEnumType,
   isObjectType,
-  DocumentNode
+  DocumentNode,
+  isSchema,
+  validate
 } from "graphql";
 
 import random from "./utils/random";
@@ -39,8 +41,23 @@ export function ergonomock(
   mocks?: ErgonoMockShape,
   mockSeed?: string
 ) {
-  random.seed(mockSeed);
+  // Guard rails for schema & query
+  if (!schema || !isSchema(schema)) {
+    throw new Error("Ergonomock requires a valid GraphQL schema.");
+  }
+
+  if (!query) {
+    throw new Error("Ergonomock requires a GraphQL query, either as a string or DocumentNode.");
+  }
+
   const document = typeof query === "string" ? parse(query) : query;
+
+  const errors = validate(schema, document);
+  if (errors.length) {
+    throw errors[0];
+  }
+
+  random.seed(mockSeed);
 
   const mockResolverFunction = function(
     type: GraphQLType,
