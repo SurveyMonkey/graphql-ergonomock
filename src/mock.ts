@@ -28,8 +28,9 @@ defaultMockMap.set("String", () => random.words());
 defaultMockMap.set("Boolean", () => random.boolean());
 defaultMockMap.set("ID", () => `${random.integer(10000000, 100000)}`);
 
+type ErgonoMockLeaf = string | boolean | number | null | Error | GraphQLFieldResolver<any, any>;
 export type ErgonoMockShape = {
-  [k: string]: string | boolean | number | null | GraphQLFieldResolver<any, any> | ErgonoMockShape;
+  [k: string]: ErgonoMockShape | ErgonoMockLeaf | Array<ErgonoMockShape | ErgonoMockLeaf>;
 };
 
 export function ergonomock(
