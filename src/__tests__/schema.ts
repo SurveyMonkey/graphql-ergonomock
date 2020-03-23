@@ -73,8 +73,13 @@ const schemaSDL = /* GraphQL */ `
     node(id: String!): Flying
     node2(id: String!): BirdsAndBees
   }
+  input ShapeInput {
+    someID: ID!
+    someInt: Int
+  }
   type RootMutation {
     returnStringArgument(s: String): String
+    createShape(input: ShapeInput): Shape
   }
   schema {
     query: RootQuery

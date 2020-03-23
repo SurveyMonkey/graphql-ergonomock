@@ -35,12 +35,19 @@ export type ErgonoMockShape = {
   [k: string]: ErgonoMockShape | ErgonoMockLeaf | Array<ErgonoMockShape | ErgonoMockLeaf>;
 };
 
+export type ErgonomockOptions = {
+  mocks?: ErgonoMockShape;
+  mockSeed?: string;
+  variables?: Record<string, any>;
+};
+
 export function ergonomock(
   schema: GraphQLSchema,
   query: string | DocumentNode,
-  mocks?: ErgonoMockShape,
-  mockSeed?: string
+  options: ErgonomockOptions = {}
 ) {
+  const { mocks, mockSeed, variables = {} } = options;
+
   // Guard rails for schema & query
   if (!schema || !isSchema(schema)) {
     throw new Error("Ergonomock requires a valid GraphQL schema.");
@@ -61,21 +68,17 @@ export function ergonomock(
 
   const mockResolverFunction = function(
     type: GraphQLType,
-    typeName?: string, // TODO: get rid of this?
     fieldName?: string
   ): GraphQLFieldResolver<ErgonoMockShape, any> {
-    // TODO: clean up this comment, which was taken as-is from apollo
     // order of precendence for mocking:
-    // 1. if the object passed in already has fieldName, just use that
+    // 1. if the object passed in already has fieldName, just use that value
     // --> if it's a function, that becomes your resolver
     // --> if it's a value, the mock resolver will return that
     // 2. if the nullableType is a list, recurse
-    // 2. if there's a mock defined for this typeName, that will be used
     // 3. if there's no mock defined, use the default mocks for this type
     return (root, args, context, info) => {
       // nullability doesn't matter for the purpose of mocking.
       const fieldType = getNullableType(type) as GraphQLNullableType;
-      const namedFieldType = getNamedType(fieldType); // TODO: get rid of this?
 
       if (root && fieldName && typeof root[fieldName] !== "undefined") {
         const mock = root[fieldName];
@@ -135,15 +138,10 @@ export function ergonomock(
 
     if (isOnQueryType || isOnMutationType) {
       mockResolver = (root, args, context, info) => {
-        return mockResolverFunction(field.type, typeName, fieldName)(
-          mocks || {},
-          args,
-          context,
-          info
-        );
+        return mockResolverFunction(field.type, fieldName)(mocks || {}, args, context, info);
       };
     } else {
-      mockResolver = mockResolverFunction(field.type, typeName, fieldName);
+      mockResolver = mockResolverFunction(field.type, fieldName);
     }
     field.resolve = mockResolver;
   });
@@ -152,7 +150,8 @@ export function ergonomock(
     schema,
     document,
     rootValue: {},
-    contextValue: {}
+    contextValue: {},
+    variableValues: variables
   });
   return resp;
 }

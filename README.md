@@ -26,7 +26,7 @@
   <h3 align="center">GraphQL Ergonomock</h3>
 
   <p align="center">
-    Developer-friendly automock for GraphQL
+    🔮 Developer-friendly automagical mocking for GraphQL
     <br />
     <a href="https://github.com/SurveyMonkey/graphql-ergonomock/issues">Report Bug</a>
     ·

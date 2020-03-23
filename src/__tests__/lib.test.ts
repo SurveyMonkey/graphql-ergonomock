@@ -325,7 +325,6 @@ describe("Automocking", () => {
       });
     });
 
-    test.todo("can provide field mock override");
     test("automocking of elements are deterministic on some seed", () => {
       const query = /* GraphQL */ `
         fragment ShapeParts on Shape {
@@ -349,9 +348,35 @@ describe("Automocking", () => {
         }
       `;
 
-      const resp: any = ergonomock(schema, query, {}, "this-is-the-randomizer-seed");
-      const resp2: any = ergonomock(schema, query, {}, "this-is-the-randomizer-seed");
+      const resp: any = ergonomock(schema, query, { mockSeed: "this-is-the-randomizer-seed" });
+      const resp2: any = ergonomock(schema, query, { mockSeed: "this-is-the-randomizer-seed" });
       expect(resp).toEqual(resp2);
+    });
+
+    test("Can automock mutations", () => {
+      const query = /* GraphQL */ `
+        mutation SampleQuery($input: ShapeInput!) {
+          createShape(input: $input) {
+            id
+            returnInt
+            returnString
+          }
+        }
+      `;
+
+      const resp: any = ergonomock(schema, query, {
+        variables: {
+          input: {
+            someID: "123",
+            someInt: 123
+          }
+        }
+      });
+      expect(resp.data.createShape).toMatchObject({
+        id: expect.toBeString(),
+        returnInt: expect.toBeNumber(),
+        returnString: expect.toBeString()
+      });
     });
   });
 
@@ -373,7 +398,7 @@ describe("Automocking", () => {
         returnFloat: 10.2,
         returnBoolean: false
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
 
       expect(resp).toMatchObject({
         data: {
@@ -399,7 +424,7 @@ describe("Automocking", () => {
         returnFloatList: [10.2, 10.2],
         returnBooleanList: [false]
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
 
       expect(resp).toMatchObject({
         data: {
@@ -421,7 +446,7 @@ describe("Automocking", () => {
       const mocks = {
         returnEnum: "A"
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
 
       expect(resp).toMatchObject({
         data: {
@@ -446,7 +471,7 @@ describe("Automocking", () => {
       const mocks = {
         returnEnumList: ["A", "C"]
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
 
       expect(resp).toMatchObject({
         data: {
@@ -471,7 +496,7 @@ describe("Automocking", () => {
       const mocks = {
         returnEnum: "D"
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
       expect(resp.errors[0].message).toBe('Expected a value of type "SomeEnum" but received: "D"');
       expect(resp).toMatchObject({
         data: {
@@ -519,7 +544,7 @@ describe("Automocking", () => {
           }
         }
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
       expect(resp).toMatchObject({
         data: {
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
@@ -615,7 +640,7 @@ describe("Automocking", () => {
           }
         ]
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
       expect(resp).toMatchObject({
         data: {
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
@@ -711,7 +736,7 @@ describe("Automocking", () => {
           { __typename: "Bee", returnEnum: "B" }
         ]
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
       expect(resp).toMatchObject({
         data: {
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
@@ -748,7 +773,7 @@ describe("Automocking", () => {
           { __typename: "Bee", returnEnum: "B" }
         ]
       };
-      const resp: any = ergonomock(schema, query, mocks);
+      const resp: any = ergonomock(schema, query, { mocks });
       expect(resp).toMatchObject({
         data: {
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
@@ -787,7 +812,7 @@ describe("Automocking", () => {
           }
         }
       };
-      const resp: any = ergonomock(schema, testQuery, mocks);
+      const resp: any = ergonomock(schema, testQuery, { mocks });
       expect(resp.data.returnShape).toMatchObject({
         id: expect.toBeString(),
         returnInt: 4,
@@ -825,7 +850,7 @@ describe("Automocking", () => {
           }
         }
       };
-      const resp: any = ergonomock(schema, testQuery, mocks);
+      const resp: any = ergonomock(schema, testQuery, { mocks });
       expect(resp.data.returnShape.nestedShape).toMatchObject({
         returnIntList: expect.toBeArray(),
         returnStringList: expect.toBeArray(),
@@ -844,6 +869,37 @@ describe("Automocking", () => {
       expect(getLastElement(nestedShape.returnIDList)).toBeString();
       expect(getLastElement(nestedShape.returnEnumList)).toBeOneOf(["A", "B", "C"]);
       expect(getLastElement(nestedShape.returnStringList)).toBeString();
+    });
+
+    test("Can partially mock mutations", () => {
+      const query = /* GraphQL */ `
+        mutation SampleQuery($input: ShapeInput!) {
+          createShape(input: $input) {
+            id
+            returnInt
+            returnString
+          }
+        }
+      `;
+
+      const resp: any = ergonomock(schema, query, {
+        mocks: {
+          createShape: {
+            id: "567"
+          }
+        },
+        variables: {
+          input: {
+            someID: "123",
+            someInt: 123
+          }
+        }
+      });
+      expect(resp.data.createShape).toMatchObject({
+        id: "567",
+        returnInt: expect.toBeNumber(),
+        returnString: expect.toBeString()
+      });
     });
   });
 
@@ -873,10 +929,43 @@ describe("Automocking", () => {
           }
         }
       };
-      const resp: any = ergonomock(schema, testQuery, mocks);
+      const resp: any = ergonomock(schema, testQuery, { mocks });
       expect(resp.data.returnShape.nestedShape.returnInt).toBe(1234);
       expect(rootReturnIntValue).toBe(4321);
       expect(resp.data.returnShape.returnInt).toBe(4321);
+    });
+
+    test("Can partially mock mutations with functions", () => {
+      const query = /* GraphQL */ `
+        mutation SampleQuery($input: ShapeInput!) {
+          createShape(input: $input) {
+            id
+            returnInt
+            returnString
+          }
+        }
+      `;
+
+      const resp: any = ergonomock(schema, query, {
+        mocks: {
+          createShape: (a, args, c, d) => {
+            return {
+              id: args.input.someID
+            };
+          }
+        },
+        variables: {
+          input: {
+            someID: "123",
+            someInt: 111
+          }
+        }
+      });
+      expect(resp.data.createShape).toMatchObject({
+        id: "123",
+        returnInt: expect.toBeNumber(),
+        returnString: expect.toBeString()
+      });
     });
   });
 
@@ -889,7 +978,9 @@ describe("Automocking", () => {
         }
       `;
       const resp: any = ergonomock(schema, testQuery, {
-        returnInt: new Error("foo bar")
+        mocks: {
+          returnInt: new Error("foo bar")
+        }
       });
       expect(resp.data).toMatchObject({
         returnInt: null,
@@ -906,7 +997,9 @@ describe("Automocking", () => {
         }
       `;
       const resp: any = ergonomock(schema, testQuery, {
-        returnEnum: new Error("foo enum")
+        mocks: {
+          returnEnum: new Error("foo enum")
+        }
       });
       expect(resp.data).toMatchObject({
         returnEnum: null,
@@ -925,7 +1018,9 @@ describe("Automocking", () => {
         }
       `;
       const resp: any = ergonomock(schema, testQuery, {
-        returnShape: new Error("foo shape")
+        mocks: {
+          returnShape: new Error("foo shape")
+        }
       });
       expect(resp.data).toMatchObject({
         returnShape: null,
@@ -942,7 +1037,9 @@ describe("Automocking", () => {
         }
       `;
       const resp: any = ergonomock(schema, testQuery, {
-        returnStringList: ["Whiskey", new Error("foo Tango"), "Foxtrot"]
+        mocks: {
+          returnStringList: ["Whiskey", new Error("foo Tango"), "Foxtrot"]
+        }
       });
       expect(resp.data).toMatchObject({
         returnStringList: ["Whiskey", null, "Foxtrot"],
@@ -964,7 +1061,13 @@ describe("Automocking", () => {
         }
       `;
       const resp: any = ergonomock(schema, testQuery, {
-        returnBirdsAndBees: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }]
+        mocks: {
+          returnBirdsAndBees: [
+            { __typename: "Bird" },
+            new Error("foo Tango"),
+            { __typename: "Bee" }
+          ]
+        }
       });
       expect(resp.data).toMatchObject({
         returnBirdsAndBees: [
@@ -987,7 +1090,9 @@ describe("Automocking", () => {
         }
       `;
       const resp: any = ergonomock(schema, testQuery, {
-        returnFlying: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }]
+        mocks: {
+          returnFlying: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }]
+        }
       });
       expect(resp.data).toMatchObject({
         returnFlying: [
@@ -1009,8 +1114,10 @@ describe("Automocking", () => {
         }
       `;
       const resp: any = ergonomock(schema, testQuery, {
-        returnShape: () => {
-          throw new Error("foo shape");
+        mocks: {
+          returnShape: () => {
+            throw new Error("foo shape");
+          }
         }
       });
       expect(resp.data).toMatchObject({
@@ -1018,53 +1125,6 @@ describe("Automocking", () => {
         returnString: expect.toBeString()
       });
       expect(resp.errors).toStrictEqual([new GraphQLError("foo shape")]);
-    });
-  });
-
-  test("base case - TBD remove this test later", () => {
-    const query = /* GraphQL */ `
-      query SampleQuery {
-        returnInt
-        returnString
-        returnFlying {
-          __typename
-          id
-          ... on Bird {
-            returnString
-          }
-          ... on Bee {
-            returnEnum
-          }
-          returnInt
-        }
-      }
-    `;
-
-    const mocks = {
-      returnString: "bar",
-      returnFlying: [
-        { __typename: "Bee", id: "123" },
-        { __typename: "Bee" },
-        { __typename: "Bird" }
-      ]
-    };
-
-    const resp: any = ergonomock(schema, query, mocks);
-
-    expect(resp).toMatchObject({
-      data: {
-        returnInt: expect.toBeNumber(),
-        returnString: "bar",
-        returnFlying: [
-          { __typename: "Bee", id: "123", returnEnum: expect.toBeOneOf(["A", "B", "C"]) },
-          {
-            __typename: "Bee",
-            id: expect.toBeString(),
-            returnEnum: expect.toBeOneOf(["A", "B", "C"])
-          },
-          { __typename: "Bird", id: expect.toBeString(), returnString: expect.toBeString() }
-        ]
-      }
     });
   });
 });

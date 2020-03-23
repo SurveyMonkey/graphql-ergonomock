@@ -49,7 +49,11 @@ export default class MockLink extends ApolloLink {
     });
 
     // Call ergonomock() to get results
-    const result = ergonomock(this.schema, operation.query, mock || {}, seed);
+    const result = ergonomock(this.schema, operation.query, {
+      mocks: mock || {},
+      mockSeed: seed,
+      variables: operation.variables
+    });
 
     // Return Observer to be compatible with apollo
     return new Observable(observer => {
