@@ -5,6 +5,17 @@
   "main": "dist/index.js",
   "author": "Joel Marcotte",
   "license": "MIT",
+  "keywords": [
+    "graphql",
+    "apollo",
+    "resolvers",
+    "mock",
+    "mocks",
+    "mocking",
+    "testing",
+    "test",
+    "typescript"
+  ],
   "scripts": {
     "test": "jest --coverage",
     "build": "rimraf ./dist && tsc",
