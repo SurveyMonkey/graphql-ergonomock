@@ -53,7 +53,7 @@
     - [Mocking Errors](#mocking-errors)
     - [Mocking Mutations](#mocking-mutations)
 - [API](#api)
-  - [`ergonomock`](#ergonomock)
+  - [`ergonomock()`](#ergonomock)
   - [`<ErgonoMockedProvider>`](#ergonomockedprovider)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -278,6 +278,24 @@ test("I can mock a response with a function", () => {
 });
 ```
 
+Finally, you can spy on executed operations via the `onCall` prop.
+
+```jsx
+const spy = jest.fn();
+const { findByText } = render(
+  <MockedProvider schema={schema} onCall={spy}>
+    <MyComponent id="1" />
+    <MyComponent id="2" />
+    <MyComponent id="3" />
+  </MockedProvider>
+);
+
+//...
+expect(spy.mock.calls).toHaveLength(3);
+const { operation, response } = spy.mock.calls[0][0];
+expect(operation.variables.id).toEqual("1");
+```
+
 
 
 #### Providing Functions as Resolver in the Mock Shape
@@ -358,7 +376,7 @@ test("Can partially mock mutations", () => {
 
 ## API
 
-### `ergonomock`
+### `ergonomock()`
 
 The `ergonomock(schema, query, options)` function takes 3 arguments
 
@@ -375,7 +393,7 @@ The `ergonomock(schema, query, options)` function takes 3 arguments
 This component's props are very similar to Apollo-Client's [MockedProvider](https://www.apollographql.com/docs/react/api/react-testing/#mockedprovider). The only differences are:
 
 - `mocks` is an object where keys are the operation names and the values are the `mocks` input that `ergonomock()` would accept. (i.e. could be empty, or any shape that matches the expected response.)
-- `onCall` is a handler that gets called by any executed query. The call signature is `({operation: GraphQLOperation, response: any}) => void` where response is the full response being returned to that single query.
+- `onCall` is a handler that gets called by any executed query. The call signature is `({operation: GraphQLOperation, response: any}) => void` where response is the full response being returned to that single query. The purpose of `onCall` is to provide some sort of spy (or `jest.fn()`) to make assertions on which calls went through, with which variables, and get a handle on the generated values from `ergonomock()`.
 
 <!-- ROADMAP -->
 ## Roadmap
