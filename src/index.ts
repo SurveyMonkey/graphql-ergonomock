@@ -1,4 +1,4 @@
-export { ergonomock, ErgonoMockShape } from "./mock";
+export { ergonomock, ErgonoMockShape, ErgonomockOptions } from "./mock";
 export {
   default as ErgonoMockedProvider,
   ErgonoMockedProviderProps

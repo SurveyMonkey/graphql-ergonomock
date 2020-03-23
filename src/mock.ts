@@ -37,7 +37,7 @@ export type ErgonoMockShape = {
 
 export type ErgonomockOptions = {
   mocks?: ErgonoMockShape;
-  mockSeed?: string;
+  seed?: string;
   variables?: Record<string, any>;
 };
 
@@ -46,7 +46,7 @@ export function ergonomock(
   query: string | DocumentNode,
   options: ErgonomockOptions = {}
 ) {
-  const { mocks, mockSeed, variables = {} } = options;
+  const { mocks, seed, variables = {} } = options;
 
   // Guard rails for schema & query
   if (!schema || !isSchema(schema)) {
@@ -64,7 +64,7 @@ export function ergonomock(
     throw errors[0];
   }
 
-  random.seed(mockSeed);
+  random.seed(seed);
 
   const mockResolverFunction = function(
     type: GraphQLType,

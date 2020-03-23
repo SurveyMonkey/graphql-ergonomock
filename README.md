@@ -42,15 +42,19 @@
 - [Table of Contents](#table-of-contents)
 - [About The Project](#about-the-project)
   - [Basic Example](#basic-example)
+  - [Basic Example (Apollo)](#basic-example-apollo)
   - [Built With](#built-with)
 - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Default Case](#default-case)
-    - [Partial Nested Shape](#partial-nested-shape)
-    - [Providing Functions as Resolver](#providing-functions-as-resolver)
+    - [ErgonoMockedProvider for Use with Apollo-Client](#ergonomockedprovider-for-use-with-apollo-client)
+    - [Providing Functions as Resolver in the Mock Shape](#providing-functions-as-resolver-in-the-mock-shape)
     - [Mocking Errors](#mocking-errors)
     - [Mocking Mutations](#mocking-mutations)
+- [API](#api)
+  - [`ergonomock`](#ergonomock)
+  - [ErgonoMockedProvider](#ergonomockedprovider)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -130,6 +134,64 @@ expect(resp.data).toMatchObject({
 }); // ✅ test pass
 ```
 
+### Basic Example (Apollo)
+
+```js
+import MockedProvider from "../ErgonoMockedProvider";
+
+// Given a particular GraphQL Schema, ...
+const schema = gql`
+  type Shape {
+    id: ID!
+    returnInt: Int
+    returnBoolean: Boolean
+  }
+
+  type Query {
+    getShape: Shape
+  }
+`;
+
+// ...a component making a query ...
+const QUERY = gql`
+query MyQuery {
+  getShape {
+    id
+    returnInt
+    returnBoolean
+  }
+}
+`;
+const MyComponent = () => {
+  const { loading, error, data } = useQuery(QUERY);
+  if (loading) return <p>Loading</p>;
+  if (error) return <p>Error</p>;
+
+  return (
+    <div>
+      MyComponent.
+      <div>String: {data.getShape.returnString}</div>
+      <div>Boolean: {data.getShape.returnBoolean}</div>
+    </div>
+  );
+};
+
+test("MyComponent can render the query results.", async () => {
+  const mocks = {
+    MyQuery: {
+      getShape: { returnString: "John Doe" }
+    }
+  };
+  const { findByText } = render(
+    <MockedProvider schema={schema} mocks={mocks}>
+      <MyComponent />
+    </MockedProvider>
+  );
+  expect(await findByText(/String: John Doe/)).toBeVisible();
+  expect(await findByText(/Boolean: (true|false)/)).toBeVisible();
+}); // ✅ test pass
+```
+
 ### Built With
 * [Typescript](https://www.typescriptlang.org/)
 * [GraphQL](https://graphql.org)
@@ -151,15 +213,91 @@ npm i graphql-ergonomock --save-dev
 
 #### Default Case
 
-TBD
+The `ergonomock()` function can be used on its own to create mock responses out of GraphQL queries.
 
-#### Partial Nested Shape
+```jsx
+import { ergonomock } from 'graphql-ergonomock';
+import schema from '../my-schema.graphql';
 
-TBD
+test("I can mock a response", () => {
+  const resp = ergonomock(schema, 'query MyCrucialOperation { car { id, plateNumber } }', {
+    mocks: { car: { plateNumber: '123abc' } }
+  });
 
-#### Providing Functions as Resolver
+  expect(resp).toMatchObject({
+    data: {
+      car: {
+        id: expect.toBeString(),
+        plateNumber: '123abc'
+      }
+    }
+  });
+});
+```
 
-TBD
+#### ErgonoMockedProvider for Use with Apollo-Client
+
+If your app uses Apollo-Client, you can also use `ErgonoMockedProvider` which wraps `ergonomock()` in a stable & deterministic way based on the query name, shape, and variables (this is so you can leverage testing snapshots if you are so inclined).
+
+```jsx
+import { ErgonoMockedProvider as MockedProvider } from 'graphql-ergonomock';
+import schema from '../my-schema.graphql';
+
+test("I can mock a response", () => {
+  const mocks = {
+    MyCrucialOperation: {
+      car: { plateNumber: '123abc' }
+    }
+  };
+  const { findByText } = render(
+    <MockedProvider schema={schema} mocks={mocks}>
+      <MyApp>
+    </MockedProvider>
+  );
+  expect(await findByText(/'123abc'/)).toBeVisible();
+});
+```
+
+If a particular component is called multiple times in the React tree (but with different variables), you can provide a function as value for an operation, and the function will be called with the `operation: GraphQLOperation` as first and only argument.
+
+```jsx
+import { ErgonoMockedProvider as MockedProvider } from 'graphql-ergonomock';
+import schema from '../my-schema.graphql';
+
+test("I can mock a response with a function", () => {
+  let cardinality = 0;
+  const mocks = {
+    MyCrucialOperation: (operation) => ({ plateNumber: `aaa00${cardinality++}` })
+  };
+  const { findAllByText } = render(
+    <MockedProvider schema={schema} mocks={mocks}>
+      <MyApp>
+    </MockedProvider>
+  );
+  expect(await findAllByText(/'aaa00'/)).toHaveLength(3);
+});
+```
+
+
+
+#### Providing Functions as Resolver in the Mock Shape
+
+You can use functions for any part of the nested mock, and it will be used as a resolver for this field. The typical signature for a resolver is `(root, args, context, info) => any`.
+
+```js
+// ...
+const mocks = {
+  returnShape: {
+    returnInt: 4321,
+    nestedShape: (root: any, args: any, ctx: any, info: any) => {
+      return {
+        returnInt: root.someField ? 1234 : 5678
+      };
+    }
+  }
+}
+//...
+```
 
 #### Mocking Errors
 
@@ -173,8 +311,10 @@ const testQuery = gql`
 `;
 
 const resp = ergonomock(schema, testQuery, {
-  getCar: () => { throw new Error("Server Error"); }
-  // or simply getCar: new Error("Server Error")
+  mocks: {
+    getCar: () => { throw new Error("Server Error"); }
+    // or simply getCar: new Error("Server Error")
+  }
 });
 
 console.log(resp.data.getCar); // null
@@ -185,11 +325,31 @@ console.log(resp.errors[0]); // { message: "Server Error", ...}
 
 TBD
 
+## API
+
+### `ergonomock`
+
+The `ergonomock(schema, query, options)` function takes 3 arguments
+
+1. _(required)_ A GraphQL **schema** (not in SDL form).
+2. _(required)_ A GraphQL **query**, either in SDL (string) form, or `DocumentNode`.
+3. _(optional)_ An option object.
+   1. `mocks` is an object that can partially or fully match the expected response shape.
+   2. `seed` is a string used to seed the random number generator for automocked values.
+   3. `variables` is the variable values object used in the query or mutation.
+
+
+### ErgonoMockedProvider
+
+This component's props are very similar to Apollo-Client's [MockedProvider](https://www.apollographql.com/docs/react/api/react-testing/#mockedprovider). The only differences are:
+
+- `mocks` is an object where keys are the operation names and the values are the `mocks` input that `ergonomock()` would accept. (i.e. could be empty, or any shape that matches the expected response.)
+- `onCall` is a handler that gets called by any executed query. The call signature is `({operation: GraphQLOperation, response: any}) => void` where response is the full response being returned to that single query.
+
 <!-- ROADMAP -->
 ## Roadmap
 
 See the [open issues](https://github.com/SurveyMonkey/graphql-ergonomock/issues) for a list of proposed features (and known issues).
-
 
 
 <!-- CONTRIBUTING -->

@@ -1,8 +1,6 @@
 import { ergonomock } from "..";
-import { buildSchemaFromTypeDefinitions } from "graphql-tools";
-import { visitWithTypeInfo, GraphQLError } from "graphql";
+import { GraphQLError } from "graphql";
 import schema from "./schema";
-// import { graphql, GraphQLResolveInfo } from "graphql";
 
 describe("Automocking", () => {
   describe("Guardrails", () => {
@@ -348,8 +346,8 @@ describe("Automocking", () => {
         }
       `;
 
-      const resp: any = ergonomock(schema, query, { mockSeed: "this-is-the-randomizer-seed" });
-      const resp2: any = ergonomock(schema, query, { mockSeed: "this-is-the-randomizer-seed" });
+      const resp: any = ergonomock(schema, query, { seed: "this-is-the-randomizer-seed" });
+      const resp2: any = ergonomock(schema, query, { seed: "this-is-the-randomizer-seed" });
       expect(resp).toEqual(resp2);
     });
 
