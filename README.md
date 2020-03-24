@@ -269,7 +269,6 @@ test("I can mock a response", () => {
 </p>
 </details>
 
-<br />
 If a particular component is called multiple times in the React tree (but with different variables), you can provide a function as value for an operation, and the function will be called with the `operation: GraphQLOperation` as first and only argument.
 <br /><br />
 <details>
@@ -294,7 +293,7 @@ test("I can mock a response with a function", () => {
 });
 ```
 </p></details>
-<br />
+
 Finally, you can spy on executed operations via the `onCall` prop.
 <br /><br />
 <details>
