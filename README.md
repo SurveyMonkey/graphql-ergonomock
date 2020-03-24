@@ -13,6 +13,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
+[![Version][version-shield]][version-url]
 [![MIT License][license-shield]][license-url]
 
 
@@ -480,6 +481,8 @@ Project Link: [https://github.com/SurveyMonkey/graphql-ergonomock](https://githu
 [forks-url]: https://github.com/SurveyMonkey/graphql-ergonomock/network/members
 [stars-shield]: https://img.shields.io/github/stars/SurveyMonkey/graphql-ergonomock.svg?style=flat-square
 [stars-url]: https://github.com/SurveyMonkey/graphql-ergonomock/stargazers
+[version-url]:https://www.npmjs.com/package/graphql-ergonomock
+[version-shield]:https://img.shields.io/npm/v/graphql-ergonomock.svg?style=flat-square
 [issues-shield]: https://img.shields.io/github/issues/SurveyMonkey/graphql-ergonomock.svg?style=flat-square
 [issues-url]: https://github.com/SurveyMonkey/graphql-ergonomock/issues
 [license-shield]: https://img.shields.io/github/license/SurveyMonkey/graphql-ergonomock.svg?style=flat-square
