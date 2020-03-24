@@ -212,10 +212,13 @@ npm i graphql-ergonomock --save-dev
 ### Usage
 
 #### Default Case
-
 The `ergonomock()` function can be used on its own to create mock responses out of GraphQL queries.
 
-```jsx
+<details>
+<summary>See example</summary>
+<p>
+
+```js
 import { ergonomock } from 'graphql-ergonomock';
 import schema from '../my-schema.graphql';
 
@@ -234,10 +237,16 @@ test("I can mock a response", () => {
   });
 });
 ```
+</p>
+</details>
 
 #### ErgonoMockedProvider for Use with Apollo-Client
 
 If your app uses Apollo-Client, you can also use `ErgonoMockedProvider` which wraps `ergonomock()`. The generated values are stable & deterministic based on the query name, shape, and variables (this is so you can leverage testing snapshots if you are so inclined).
+
+<details>
+<summary>See example</summary>
+<p>
 
 ```jsx
 import { ErgonoMockedProvider as MockedProvider } from 'graphql-ergonomock';
@@ -257,8 +266,15 @@ test("I can mock a response", () => {
   expect(await findByText(/'123abc'/)).toBeVisible();
 });
 ```
+</p>
+</details>
 
+<br />
 If a particular component is called multiple times in the React tree (but with different variables), you can provide a function as value for an operation, and the function will be called with the `operation: GraphQLOperation` as first and only argument.
+<br /><br />
+<details>
+<summary>See example</summary>
+<p>
 
 ```jsx
 import { ErgonoMockedProvider as MockedProvider } from 'graphql-ergonomock';
@@ -277,8 +293,12 @@ test("I can mock a response with a function", () => {
   expect(await findAllByText(/'aaa00'/)).toHaveLength(3);
 });
 ```
-
+</p></details>
+<br />
 Finally, you can spy on executed operations via the `onCall` prop.
+<br /><br />
+<details>
+<summary>See example</summary><p>
 
 ```jsx
 const spy = jest.fn();
@@ -295,12 +315,17 @@ expect(spy.mock.calls).toHaveLength(3);
 const { operation, response } = spy.mock.calls[0][0];
 expect(operation.variables.id).toEqual("1");
 ```
+</p></details>
+
 
 
 
 #### Providing Functions as Resolver in the Mock Shape
 
 You can use functions for any part of the nested mock, and it will be used as a resolver for this field. The typical signature for a resolver is `(root, args, context, info) => any`.
+
+<details>
+<summary>See example</summary><p>
 
 ```js
 // ...
@@ -316,10 +341,15 @@ const mocks = {
 }
 //...
 ```
+</p></details>
+
 
 #### Mocking Errors
 
 You can return or throw errors within the mock shape.
+
+<details>
+<summary>See example</summary><p>
 
 ```js
 const testQuery = gql`
@@ -340,10 +370,15 @@ const resp = ergonomock(schema, testQuery, {
 console.log(resp.data.getCar); // null
 console.log(resp.errors[0]); // { message: "Server Error", ...}
 ```
+</p></details>
+
 
 #### Mocking Mutations
 
 You can mock mutations, but if you are using `ergonomock()` directly, you'll have to provide the correct variables for the operation in order for it to not fail.
+
+<details>
+<summary>See example</summary><p>
 
 ```jsx
 test("Can partially mock mutations", () => {
@@ -373,6 +408,8 @@ test("Can partially mock mutations", () => {
   });
 });
 ```
+</p></details>
+
 
 ## API
 
