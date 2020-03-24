@@ -6,14 +6,19 @@
   "author": "Joel Marcotte",
   "license": "MIT",
   "keywords": [
-    "graphql",
+    "apollo-client",
     "apollo",
-    "resolvers",
+    "factory",
+    "fixture",
+    "graphql",
+    "jest",
     "mock",
-    "mocks",
+    "MockedProvider",
     "mocking",
-    "testing",
+    "mocks",
+    "resolvers",
     "test",
+    "testing",
     "typescript"
   ],
   "scripts": {
