@@ -122,7 +122,7 @@ const mocks = {
 };
 
 // ... provides the expected object filled with mock data
-const resp = ergonomock(schema, query, mocks);
+const resp = ergonomock(schema, query, { mocks });
 expect(resp.data).toMatchObject({
   id: expect.toBeString(),
   nestedShape: {
@@ -138,7 +138,7 @@ expect(resp.data).toMatchObject({
 ### Basic Example (Apollo)
 
 ```js
-import MockedProvider from "../ErgonoMockedProvider";
+import { ErgonoMockedProvider as MockedProvider } from "graphql-ergonomock";
 
 // Given a particular GraphQL Schema, ...
 const schema = gql`
