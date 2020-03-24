@@ -459,7 +459,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Maintainer: Joel Marcotte (Github @joual)
+Maintainer: Joel Marcotte (Github [@joual](https://github.com/joual))
 
 Project Link: [https://github.com/SurveyMonkey/graphql-ergonomock](https://github.com/SurveyMonkey/graphql-ergonomock)
 
