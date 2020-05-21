@@ -59,7 +59,7 @@
   "dependencies": {
     "fast-json-stable-stringify": "^2.1.0",
     "graphql": "^14.6.0",
-    "graphql-tools": "^4.0.7",
+    "graphql-tools": "^6.0.0",
     "seedrandom": "^3.0.5"
   }
 }
