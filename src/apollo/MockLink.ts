@@ -1,6 +1,6 @@
-import { ApolloLink, Operation, Observable, FetchResult, ExecutionResult } from "@apollo/client";
+import { ApolloLink, Operation, Observable, FetchResult } from "@apollo/client";
 import { ErgonoMockShape, ergonomock } from "../mock";
-import { GraphQLSchema } from "graphql";
+import { GraphQLSchema, ExecutionResult } from "graphql";
 import stringify from "fast-json-stable-stringify";
 
 type MockLinkOptions = {
