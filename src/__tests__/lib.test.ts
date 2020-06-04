@@ -48,7 +48,7 @@ describe("Automocking", () => {
         returnString: expect.toBeString(),
         returnFloat: expect.toBeNumber(),
         returnBoolean: expect.toBeBoolean(),
-        returnID: expect.toBeString()
+        returnID: expect.toBeString(),
       });
       expect(resp.data.returnInt % 1 === 0).toBe(true);
       expect(resp.data.returnFloat % 1 !== 0).toBe(true);
@@ -70,7 +70,7 @@ describe("Automocking", () => {
         returnStringList: expect.toBeArray(),
         returnFloatList: expect.toBeArray(),
         returnBooleanList: expect.toBeArray(),
-        returnIDList: expect.toBeArray()
+        returnIDList: expect.toBeArray(),
       });
       function getLastElement(arr: any[]) {
         return arr[arr.length - 1];
@@ -90,7 +90,7 @@ describe("Automocking", () => {
       `;
       const resp: any = ergonomock(schema, testQuery);
       expect(resp.data).toMatchObject({
-        returnEnum: expect.toBeOneOf(["A", "B", "C"])
+        returnEnum: expect.toBeOneOf(["A", "B", "C"]),
       });
     });
 
@@ -162,8 +162,8 @@ describe("Automocking", () => {
       expect(resp.data).toMatchObject({
         returnShape: {
           id: expect.toBeString(),
-          returnEnum: expect.toBeOneOf(["A", "B", "C"])
-        }
+          returnEnum: expect.toBeOneOf(["A", "B", "C"]),
+        },
       });
     });
     test("can automock nested unions", () => {
@@ -250,7 +250,7 @@ describe("Automocking", () => {
         returnString: expect.toBeString(),
         returnFloat: expect.toBeNumber(),
         returnBoolean: expect.toBeBoolean(),
-        returnID: expect.toBeString()
+        returnID: expect.toBeString(),
       });
       expect(resp.data.returnShape.returnInt % 1 === 0).toBe(true);
       expect(resp.data.returnShape.returnFloat % 1 !== 0).toBe(true);
@@ -265,7 +265,7 @@ describe("Automocking", () => {
       `;
       const resp: any = ergonomock(schema, testQuery);
       expect(resp.data.returnShape).toMatchObject({
-        returnEnum: expect.toBeOneOf(["A", "B", "C"])
+        returnEnum: expect.toBeOneOf(["A", "B", "C"]),
       });
     });
     test("can automock nested objects", () => {
@@ -288,7 +288,7 @@ describe("Automocking", () => {
         returnString: expect.toBeString(),
         returnFloat: expect.toBeNumber(),
         returnBoolean: expect.toBeBoolean(),
-        returnID: expect.toBeString()
+        returnID: expect.toBeString(),
       });
     });
     test("can automock inline fragments", () => {
@@ -318,8 +318,8 @@ describe("Automocking", () => {
         nestedShape: {
           returnInt: expect.toBeNumber(),
           returnString: expect.toBeString(),
-          returnFloat: expect.toBeNumber()
-        }
+          returnFloat: expect.toBeNumber(),
+        },
       });
     });
 
@@ -366,14 +366,14 @@ describe("Automocking", () => {
         variables: {
           input: {
             someID: "123",
-            someInt: 123
-          }
-        }
+            someInt: 123,
+          },
+        },
       });
       expect(resp.data.createShape).toMatchObject({
         id: expect.toBeString(),
         returnInt: expect.toBeNumber(),
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
     });
   });
@@ -394,15 +394,15 @@ describe("Automocking", () => {
         returnString: "bar",
         returnInt: 12345,
         returnFloat: 10.2,
-        returnBoolean: false
+        returnBoolean: false,
       };
       const resp: any = ergonomock(schema, query, { mocks });
 
       expect(resp).toMatchObject({
         data: {
           returnID: expect.toBeString(),
-          ...mocks
-        }
+          ...mocks,
+        },
       });
     });
     test("can return basic types list in mock", () => {
@@ -420,15 +420,15 @@ describe("Automocking", () => {
         returnStringList: ["bar"],
         returnIntList: [12345, 54321],
         returnFloatList: [10.2, 10.2],
-        returnBooleanList: [false]
+        returnBooleanList: [false],
       };
       const resp: any = ergonomock(schema, query, { mocks });
 
       expect(resp).toMatchObject({
         data: {
           returnID: expect.toBeString(),
-          ...mocks
-        }
+          ...mocks,
+        },
       });
     });
     test("can return basic enum mock", () => {
@@ -442,7 +442,7 @@ describe("Automocking", () => {
       `;
 
       const mocks = {
-        returnEnum: "A"
+        returnEnum: "A",
       };
       const resp: any = ergonomock(schema, query, { mocks });
 
@@ -450,9 +450,9 @@ describe("Automocking", () => {
         data: {
           returnEnum: "A",
           returnShape: {
-            id: expect.toBeString()
-          }
-        }
+            id: expect.toBeString(),
+          },
+        },
       });
     });
 
@@ -467,7 +467,7 @@ describe("Automocking", () => {
       `;
 
       const mocks = {
-        returnEnumList: ["A", "C"]
+        returnEnumList: ["A", "C"],
       };
       const resp: any = ergonomock(schema, query, { mocks });
 
@@ -475,9 +475,9 @@ describe("Automocking", () => {
         data: {
           returnEnumList: ["A", "C"],
           returnShape: {
-            id: expect.toBeString()
-          }
-        }
+            id: expect.toBeString(),
+          },
+        },
       });
     });
 
@@ -492,17 +492,17 @@ describe("Automocking", () => {
       `;
 
       const mocks = {
-        returnEnum: "D"
+        returnEnum: "D",
       };
       const resp: any = ergonomock(schema, query, { mocks });
-      expect(resp.errors[0].message).toBe('Expected a value of type "SomeEnum" but received: "D"');
+      expect(resp.errors[0].message).toBe('Enum "SomeEnum" cannot represent value: "D"');
       expect(resp).toMatchObject({
         data: {
           returnEnum: null,
           returnShape: {
-            id: expect.toBeString()
-          }
-        }
+            id: expect.toBeString(),
+          },
+        },
       });
     });
     test("can return object mock", () => {
@@ -536,11 +536,11 @@ describe("Automocking", () => {
             nestedShape: {
               returnInt: 3,
               nestedShape: {
-                returnInt: 4
-              }
-            }
-          }
-        }
+                returnInt: 4,
+              },
+            },
+          },
+        },
       };
       const resp: any = ergonomock(schema, query, { mocks });
       expect(resp).toMatchObject({
@@ -557,12 +557,12 @@ describe("Automocking", () => {
                 returnInt: 3,
                 nestedShape: {
                   id: expect.toBeString(),
-                  returnInt: 4
-                }
-              }
-            }
-          }
-        }
+                  returnInt: 4,
+                },
+              },
+            },
+          },
+        },
       });
     });
     test("can return object mock list", () => {
@@ -598,20 +598,20 @@ describe("Automocking", () => {
                 nestedShape: {
                   returnInt: 3,
                   nestedShape: {
-                    returnInt: 4
-                  }
-                }
+                    returnInt: 4,
+                  },
+                },
               },
               {
                 returnInt: 5,
                 nestedShape: {
                   returnInt: 6,
                   nestedShape: {
-                    returnInt: 7
-                  }
-                }
-              }
-            ]
+                    returnInt: 7,
+                  },
+                },
+              },
+            ],
           },
           {
             returnInt: 8,
@@ -621,22 +621,22 @@ describe("Automocking", () => {
                 nestedShape: {
                   returnInt: 10,
                   nestedShape: {
-                    returnInt: 11
-                  }
-                }
+                    returnInt: 11,
+                  },
+                },
               },
               {
                 returnInt: 12,
                 nestedShape: {
                   returnInt: 13,
                   nestedShape: {
-                    returnInt: 14
-                  }
-                }
-              }
-            ]
-          }
-        ]
+                    returnInt: 14,
+                  },
+                },
+              },
+            ],
+          },
+        ],
       };
       const resp: any = ergonomock(schema, query, { mocks });
       expect(resp).toMatchObject({
@@ -655,9 +655,9 @@ describe("Automocking", () => {
                     returnInt: 3,
                     nestedShape: {
                       id: expect.toBeString(),
-                      returnInt: 4
-                    }
-                  }
+                      returnInt: 4,
+                    },
+                  },
                 },
                 {
                   id: expect.toBeString(),
@@ -667,11 +667,11 @@ describe("Automocking", () => {
                     returnInt: 6,
                     nestedShape: {
                       id: expect.toBeString(),
-                      returnInt: 7
-                    }
-                  }
-                }
-              ]
+                      returnInt: 7,
+                    },
+                  },
+                },
+              ],
             },
             {
               id: expect.toBeString(),
@@ -685,9 +685,9 @@ describe("Automocking", () => {
                     returnInt: 10,
                     nestedShape: {
                       id: expect.toBeString(),
-                      returnInt: 11
-                    }
-                  }
+                      returnInt: 11,
+                    },
+                  },
                 },
                 {
                   id: expect.toBeString(),
@@ -697,14 +697,14 @@ describe("Automocking", () => {
                     returnInt: 13,
                     nestedShape: {
                       id: expect.toBeString(),
-                      returnInt: 14
-                    }
-                  }
-                }
-              ]
-            }
-          ]
-        }
+                      returnInt: 14,
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
       });
     });
 
@@ -731,8 +731,8 @@ describe("Automocking", () => {
         returnBirdsAndBees: [
           { __typename: "Bird", returnString: "foo bar" },
           { __typename: "Bee", returnEnum: "A" },
-          { __typename: "Bee", returnEnum: "B" }
-        ]
+          { __typename: "Bee", returnEnum: "B" },
+        ],
       };
       const resp: any = ergonomock(schema, query, { mocks });
       expect(resp).toMatchObject({
@@ -741,9 +741,9 @@ describe("Automocking", () => {
           returnBirdsAndBees: [
             { __typename: "Bird", returnString: "foo bar", returnInt: expect.toBeNumber() },
             { __typename: "Bee", returnEnum: "A", returnInt: expect.toBeNumber() },
-            { __typename: "Bee", returnEnum: "B", returnInt: expect.toBeNumber() }
-          ]
-        }
+            { __typename: "Bee", returnEnum: "B", returnInt: expect.toBeNumber() },
+          ],
+        },
       });
     });
 
@@ -768,8 +768,8 @@ describe("Automocking", () => {
         returnFlying: [
           { __typename: "Bird", returnString: "foo bar" },
           { __typename: "Bee", returnEnum: "A" },
-          { __typename: "Bee", returnEnum: "B" }
-        ]
+          { __typename: "Bee", returnEnum: "B" },
+        ],
       };
       const resp: any = ergonomock(schema, query, { mocks });
       expect(resp).toMatchObject({
@@ -778,9 +778,9 @@ describe("Automocking", () => {
           returnFlying: [
             { __typename: "Bird", returnString: "foo bar", returnInt: expect.toBeNumber() },
             { __typename: "Bee", returnEnum: "A", returnInt: expect.toBeNumber() },
-            { __typename: "Bee", returnEnum: "B", returnInt: expect.toBeNumber() }
-          ]
-        }
+            { __typename: "Bee", returnEnum: "B", returnInt: expect.toBeNumber() },
+          ],
+        },
       });
     });
 
@@ -806,9 +806,9 @@ describe("Automocking", () => {
         returnShape: {
           returnInt: 4,
           nestedShape: {
-            returnString: "Bar"
-          }
-        }
+            returnString: "Bar",
+          },
+        },
       };
       const resp: any = ergonomock(schema, testQuery, { mocks });
       expect(resp.data.returnShape).toMatchObject({
@@ -819,8 +819,8 @@ describe("Automocking", () => {
         nestedShape: {
           returnInt: expect.toBeNumber(),
           returnString: "Bar",
-          returnFloat: expect.toBeNumber()
-        }
+          returnFloat: expect.toBeNumber(),
+        },
       });
     });
 
@@ -844,9 +844,9 @@ describe("Automocking", () => {
         returnShape: {
           returnIntList: [4, 4, 3],
           nestedShape: {
-            returnStringList: ["Bar"]
-          }
-        }
+            returnStringList: ["Bar"],
+          },
+        },
       };
       const resp: any = ergonomock(schema, testQuery, { mocks });
       expect(resp.data.returnShape.nestedShape).toMatchObject({
@@ -855,7 +855,7 @@ describe("Automocking", () => {
         returnFloatList: expect.toBeArray(),
         returnBooleanList: expect.toBeArray(),
         returnIDList: expect.toBeArray(),
-        returnEnumList: expect.toBeArray()
+        returnEnumList: expect.toBeArray(),
       });
       function getLastElement(arr: any[]) {
         return arr[arr.length - 1];
@@ -883,20 +883,20 @@ describe("Automocking", () => {
       const resp: any = ergonomock(schema, query, {
         mocks: {
           createShape: {
-            id: "567"
-          }
+            id: "567",
+          },
         },
         variables: {
           input: {
             someID: "123",
-            someInt: 123
-          }
-        }
+            someInt: 123,
+          },
+        },
       });
       expect(resp.data.createShape).toMatchObject({
         id: "567",
         returnInt: expect.toBeNumber(),
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
     });
   });
@@ -922,10 +922,10 @@ describe("Automocking", () => {
           nestedShape: (root: any, args: any, ctx: any, info: any) => {
             rootReturnIntValue = root.returnInt;
             return {
-              returnInt: 1234
+              returnInt: 1234,
             };
-          }
-        }
+          },
+        },
       };
       const resp: any = ergonomock(schema, testQuery, { mocks });
       expect(resp.data.returnShape.nestedShape.returnInt).toBe(1234);
@@ -948,21 +948,21 @@ describe("Automocking", () => {
         mocks: {
           createShape: (a, args, c, d) => {
             return {
-              id: args.input.someID
+              id: args.input.someID,
             };
-          }
+          },
         },
         variables: {
           input: {
             someID: "123",
-            someInt: 111
-          }
-        }
+            someInt: 111,
+          },
+        },
       });
       expect(resp.data.createShape).toMatchObject({
         id: "123",
         returnInt: expect.toBeNumber(),
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
     });
   });
@@ -977,12 +977,12 @@ describe("Automocking", () => {
       `;
       const resp: any = ergonomock(schema, testQuery, {
         mocks: {
-          returnInt: new Error("foo bar")
-        }
+          returnInt: new Error("foo bar"),
+        },
       });
       expect(resp.data).toMatchObject({
         returnInt: null,
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
       expect(resp.errors).toStrictEqual([new GraphQLError("foo bar")]);
     });
@@ -996,12 +996,12 @@ describe("Automocking", () => {
       `;
       const resp: any = ergonomock(schema, testQuery, {
         mocks: {
-          returnEnum: new Error("foo enum")
-        }
+          returnEnum: new Error("foo enum"),
+        },
       });
       expect(resp.data).toMatchObject({
         returnEnum: null,
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
       expect(resp.errors).toStrictEqual([new GraphQLError("foo enum")]);
     });
@@ -1017,12 +1017,12 @@ describe("Automocking", () => {
       `;
       const resp: any = ergonomock(schema, testQuery, {
         mocks: {
-          returnShape: new Error("foo shape")
-        }
+          returnShape: new Error("foo shape"),
+        },
       });
       expect(resp.data).toMatchObject({
         returnShape: null,
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
       expect(resp.errors).toStrictEqual([new GraphQLError("foo shape")]);
     });
@@ -1036,12 +1036,12 @@ describe("Automocking", () => {
       `;
       const resp: any = ergonomock(schema, testQuery, {
         mocks: {
-          returnStringList: ["Whiskey", new Error("foo Tango"), "Foxtrot"]
-        }
+          returnStringList: ["Whiskey", new Error("foo Tango"), "Foxtrot"],
+        },
       });
       expect(resp.data).toMatchObject({
         returnStringList: ["Whiskey", null, "Foxtrot"],
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
       expect(resp.errors).toStrictEqual([new GraphQLError("foo Tango")]);
     });
@@ -1063,17 +1063,17 @@ describe("Automocking", () => {
           returnBirdsAndBees: [
             { __typename: "Bird" },
             new Error("foo Tango"),
-            { __typename: "Bee" }
-          ]
-        }
+            { __typename: "Bee" },
+          ],
+        },
       });
       expect(resp.data).toMatchObject({
         returnBirdsAndBees: [
           { __typename: "Bird", id: expect.toBeString() },
           null,
-          { __typename: "Bee", id: expect.toBeString() }
+          { __typename: "Bee", id: expect.toBeString() },
         ],
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
       expect(resp.errors).toStrictEqual([new GraphQLError("foo Tango")]);
     });
@@ -1089,16 +1089,16 @@ describe("Automocking", () => {
       `;
       const resp: any = ergonomock(schema, testQuery, {
         mocks: {
-          returnFlying: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }]
-        }
+          returnFlying: [{ __typename: "Bird" }, new Error("foo Tango"), { __typename: "Bee" }],
+        },
       });
       expect(resp.data).toMatchObject({
         returnFlying: [
           { __typename: "Bird", id: expect.toBeString() },
           null,
-          { __typename: "Bee", id: expect.toBeString() }
+          { __typename: "Bee", id: expect.toBeString() },
         ],
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
       expect(resp.errors).toStrictEqual([new GraphQLError("foo Tango")]);
     });
@@ -1115,12 +1115,12 @@ describe("Automocking", () => {
         mocks: {
           returnShape: () => {
             throw new Error("foo shape");
-          }
-        }
+          },
+        },
       });
       expect(resp.data).toMatchObject({
         returnShape: null,
-        returnString: expect.toBeString()
+        returnString: expect.toBeString(),
       });
       expect(resp.errors).toStrictEqual([new GraphQLError("foo shape")]);
     });
