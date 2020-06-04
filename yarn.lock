@@ -2,16 +2,16 @@
 # yarn lockfile v1
 
 
-"@apollo/client@3.0.0-beta.41":
-  version "3.0.0-beta.41"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.0.0-beta.41.tgz#37769f95d4829f2af884e76442401a31ac9d9238"
-  integrity sha512-3FtiBP0gKDjmCIbPUn8GkBshA8vXUB9Zi+BOSEOwo5HDIEF0NXg19ov+m8SqaZEG+jU6p7w+dmHyRGkUxj9b4g==
+"@apollo/client@3.0.0-rc.0":
+  version "3.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.0.0-rc.0.tgz#677d70d2d8a230c8389020b00953d8c80c4e29a8"
+  integrity sha512-NqndZGDkQQt93QszFnxNdIm1Mks1S6img0pV/ppDTpr7ZkgwoSceH/GGSfyV8n9xc0PVma0Xg+1QAMmjGNKMfw==
   dependencies:
     "@types/zen-observable" "^0.8.0"
     "@wry/equality" "^0.1.9"
     fast-json-stable-stringify "^2.0.0"
     graphql-tag "^2.10.2"
-    optimism "^0.11.5"
+    optimism "^0.12.1"
     symbol-observable "^1.2.0"
     ts-invariant "^0.4.4"
     tslib "^1.10.0"
@@ -826,10 +826,10 @@
   resolved "https://registry.yarnpkg.com/@types/zen-observable/-/zen-observable-0.8.0.tgz#8b63ab7f1aa5321248aad5ac890a485656dcea4d"
   integrity sha512-te5lMAWii1uEJ4FwLjzdlbw3+n0FZNOvFXHxQDKeT0dilh7HOzdMzV2TrJVUzq8ep7J4Na8OUYPRLSQkJHAlrg==
 
-"@wry/context@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@wry/context/-/context-0.5.0.tgz#5ff84d0d5726b62c07045af8465f890eb3823c8c"
-  integrity sha512-yW5XFrWbRvv2/f86+g0YAfko7671SQg7Epn8lYjux4MZmIvtPvK2ts+vG1QAPu2w6GuBioEJknRa7K2LFj2kQw==
+"@wry/context@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@wry/context/-/context-0.5.2.tgz#f2a5d5ab9227343aa74c81e06533c1ef84598ec7"
+  integrity sha512-B/JLuRZ/vbEKHRUiGj6xiMojST1kHhu4WcreLfNN7q9DqQFrb97cWgf/kiYsPSUCAMVN0HzfFc8XjJdzgZzfjw==
   dependencies:
     tslib "^1.9.3"
 
@@ -5122,12 +5122,12 @@ opener@^1.5.1:
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.1.tgz#6d2f0e77f1a0af0032aca716c2c1fbb8e7e8abed"
   integrity sha512-goYSy5c2UXE4Ra1xixabeVh1guIX/ZV/YokJksb6q2lubWu6UbvPQ20p542/sFIll1nl8JnCyK9oBaOcCWXwvA==
 
-optimism@^0.11.5:
-  version "0.11.5"
-  resolved "https://registry.yarnpkg.com/optimism/-/optimism-0.11.5.tgz#4c5d45fa0fa1cc9dcf092729b5d6d661b53ff5c9"
-  integrity sha512-twCHmBb64DYzEZ8A3O+TLCuF/RmZPBhXPQYv4agoiALRLlW9SidMzd7lwUP9mL0jOZhzhnBmb8ajqA00ECo/7g==
+optimism@^0.12.1:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/optimism/-/optimism-0.12.1.tgz#933f9467b9aef0e601655adb9638f893e486ad02"
+  integrity sha512-t8I7HM1dw0SECitBYAqFOVHoBAHEQBTeKjIL9y9ImHzAVkdyPK4ifTgM4VJRDtTUY4r/u5Eqxs4XcGPHaoPkeQ==
   dependencies:
-    "@wry/context" "^0.5.0"
+    "@wry/context" "^0.5.2"
 
 optimist@^0.6.1:
   version "0.6.1"
