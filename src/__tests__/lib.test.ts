@@ -1,18 +1,19 @@
 import { ergonomock } from "..";
 import { GraphQLError } from "graphql";
 import schema from "./schema";
+import schemaAST from "./schema-ast.json";
 
 describe("Automocking", () => {
   describe("Guardrails", () => {
-    test("it throws without a schema", () => {
-      expect(() => {
-        (ergonomock as any)();
-      }).toThrowError("Ergonomock requires a valid GraphQL schema");
-    });
     test("it throws without a valid schema", () => {
       expect(() => {
         (ergonomock as any)("foo", "bar");
       }).toThrowError("Ergonomock requires a valid GraphQL schema");
+    });
+    test("it accepts an imported DocumentNode", () => {
+      expect(() => {
+        (ergonomock as any)(schemaAST);
+      }).toThrowError("Ergonomock requires a GraphQL query, either as a string or DocumentNode.");
     });
     test("it throws without a query", () => {
       expect(() => {
