@@ -16,7 +16,8 @@ import {
   isObjectType,
   DocumentNode,
   isSchema,
-  validate
+  validate,
+  buildASTSchema,
 } from "graphql";
 
 import random from "./utils/random";
@@ -42,15 +43,22 @@ export type ErgonomockOptions = {
 };
 
 export function ergonomock(
-  schema: GraphQLSchema,
+  schema: GraphQLSchema | DocumentNode,
   query: string | DocumentNode,
   options: ErgonomockOptions = {}
 ) {
   const { mocks, seed, variables = {} } = options;
 
   // Guard rails for schema & query
-  if (!schema || !isSchema(schema)) {
-    throw new Error("Ergonomock requires a valid GraphQL schema.");
+  if (!isSchema(schema)) {
+    try {
+      schema = buildASTSchema(schema);
+      if (!isSchema(schema)) {
+        throw new Error("Ergonomock requires a valid GraphQL schema.");
+      }
+    } catch (err) {
+      throw new Error("Ergonomock requires a valid GraphQL schema.");
+    }
   }
 
   if (!query) {
@@ -66,7 +74,7 @@ export function ergonomock(
 
   random.seed(seed);
 
-  const mockResolverFunction = function(
+  const mockResolverFunction = function (
     type: GraphQLType,
     fieldName?: string
   ): GraphQLFieldResolver<ErgonoMockShape, any> {
@@ -102,7 +110,7 @@ export function ergonomock(
       if (fieldType instanceof GraphQLList) {
         return random
           .list()
-          .map(_ => mockResolverFunction(fieldType.ofType)(root, args, context, info));
+          .map((_) => mockResolverFunction(fieldType.ofType)(root, args, context, info));
       }
 
       // Unions and interfaces
@@ -151,7 +159,7 @@ export function ergonomock(
     document,
     rootValue: {},
     contextValue: {},
-    variableValues: variables
+    variableValues: variables,
   });
   return resp;
 }

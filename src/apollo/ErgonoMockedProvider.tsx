@@ -10,10 +10,10 @@ import {
   NormalizedCacheObject
 } from "@apollo/client";
 import MockLink, { ApolloErgonoMockMap, MockLinkCallHandler } from "./MockLink";
-import { GraphQLSchema } from "graphql";
+import { GraphQLSchema, DocumentNode } from "graphql";
 
 export interface ErgonoMockedProviderProps<TSerializedCache = {}> {
-  schema: GraphQLSchema;
+  schema: GraphQLSchema | DocumentNode;
   onCall?: MockLinkCallHandler;
   mocks?: ApolloErgonoMockMap;
   addTypename?: boolean;
