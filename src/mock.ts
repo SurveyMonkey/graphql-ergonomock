@@ -43,16 +43,16 @@ export type ErgonomockOptions = {
 };
 
 export function ergonomock(
-  schema: GraphQLSchema | DocumentNode,
+  inputSchema: GraphQLSchema | DocumentNode,
   query: string | DocumentNode,
   options: ErgonomockOptions = {}
 ) {
   const { mocks, seed, variables = {} } = options;
-
+  let schema: GraphQLSchema = inputSchema as GraphQLSchema;
   // Guard rails for schema & query
-  if (!isSchema(schema)) {
+  if (!isSchema(inputSchema)) {
     try {
-      schema = buildASTSchema(schema);
+      schema = buildASTSchema(inputSchema);
       if (!isSchema(schema)) {
         throw new Error("Ergonomock requires a valid GraphQL schema.");
       }
