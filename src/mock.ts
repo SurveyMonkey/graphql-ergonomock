@@ -19,7 +19,7 @@ import {
   validate,
   buildASTSchema,
 } from "graphql";
-
+import { addTypenameToDocument } from '@apollo/client/utilities/'
 import random from "./utils/random";
 import getRandomElement from "./utils/getRandomElement";
 import forEachFieldInQuery from "./utils/forEachFieldInQuery";
@@ -65,7 +65,7 @@ export function ergonomock(
     throw new Error("Ergonomock requires a GraphQL query, either as a string or DocumentNode.");
   }
 
-  const document = typeof query === "string" ? parse(query) : query;
+  const document = addTypenameToDocument(typeof query === "string" ? parse(query) : query);
 
   const errors = validate(schema, document);
   if (errors.length) {
