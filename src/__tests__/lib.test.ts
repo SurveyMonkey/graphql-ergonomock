@@ -162,7 +162,6 @@ describe("Automocking", () => {
       const resp: any = ergonomock(schema, testQuery);
       expect(resp.data).toMatchObject({
         returnShape: {
-          __typename: 'Shape',
           id: expect.toBeString(),
           returnEnum: expect.toBeOneOf(["A", "B", "C"]),
         },
