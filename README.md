@@ -144,7 +144,7 @@ import { ErgonoMockedProvider as MockedProvider } from "graphql-ergonomock";
 const schema = gql`
   type Shape {
     id: ID!
-    returnInt: Int
+    returnString: String
     returnBoolean: Boolean
   }
 
@@ -158,7 +158,7 @@ const QUERY = gql`
 query MyQuery {
   getShape {
     id
-    returnInt
+    returnString
     returnBoolean
   }
 }
@@ -172,7 +172,7 @@ const MyComponent = () => {
     <div>
       MyComponent.
       <div>String: {data.getShape.returnString}</div>
-      <div>Boolean: {data.getShape.returnBoolean}</div>
+      <div>Boolean: {data.getShape.returnBoolean.toString()}</div>
     </div>
   );
 };
