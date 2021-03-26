@@ -1126,4 +1126,165 @@ describe("Automocking", () => {
       expect(resp.errors).toStrictEqual([new GraphQLError("foo shape")]);
     });
   });
+
+  describe("default mock resolvers", () => {
+    test("can mock partiallly resolved objects", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            id
+            returnInt
+            returnIntList
+            returnString
+            returnFloat
+            returnBoolean
+          }
+        }
+      `;
+      const resp: any = ergonomock(schema, testQuery, {
+        resolvers: {
+          Shape: () => ({
+            // only returnInt and returnIntList are mocked,
+            // the rest of the results should be auto-mocked
+            returnInt: 1234,
+            returnIntList: [1234],
+          }),
+        },
+      });
+      expect(resp.data.returnShape).toMatchObject({
+        id: expect.toBeString(),
+        returnInt: 1234,
+        returnIntList: [1234],
+        returnString: expect.toBeString(),
+        returnFloat: expect.toBeNumber(),
+        returnBoolean: expect.toBeBoolean(),
+      });
+    });
+
+    test("it can mock partiallly resolved nested objects", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            id
+            returnInt
+            returnString
+            nestedShape {
+              id
+              returnString
+            }
+          }
+        }
+      `;
+      const resp: any = ergonomock(schema, testQuery, {
+        resolvers: {
+          Shape: () => ({
+            // all returnString under Shape should return "Hello world!"
+            returnString: "Hello world!",
+          }),
+        },
+      });
+      expect(resp.data.returnShape).toMatchObject({
+        id: expect.toBeString(),
+        returnInt: expect.toBeNumber(),
+        returnString: "Hello world!",
+        nestedShape: {
+          id: expect.toBeString(),
+          returnString: "Hello world!",
+        },
+      });
+    });
+
+    test("can override basic scalar type", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            returnInt
+          }
+          returnInt
+          returnListOfInt
+        }
+      `;
+      const resp: any = ergonomock(schema, testQuery, {
+        resolvers: {
+          Int: () => 1234,
+        },
+      });
+      expect(resp.data).toMatchObject({
+        returnShape: {
+          returnInt: 1234,
+        },
+        returnInt: 1234,
+      });
+      expect(resp.data.returnListOfInt.every((number) => number === 1234)).toBe(true);
+    });
+
+    test("can provide a default resolver for custom scalar type", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnShape {
+            id
+            returnCustomScalar
+          }
+        }
+      `;
+      const resp: any = ergonomock(schema, testQuery, {
+        resolvers: {
+          CustomScalarType: () => "Custom scalar value",
+        },
+      });
+      expect(resp.data.returnShape.returnCustomScalar).toEqual("Custom scalar value");
+    });
+
+    test("can't override union type", () => {
+      const testQuery = /* GraphQL */ `
+        {
+          returnBirdsAndBees {
+            __typename
+            ... on Bird {
+              id
+            }
+            ... on Bee {
+              id
+            }
+          }
+        }
+      `;
+      const resp: any = ergonomock(schema, testQuery, {
+        resolvers: {
+          BirdsAndBees: () => ({
+            id: 1234,
+          }),
+        },
+      });
+      expect(resp.data.returnBirdsAndBees.find(({ id }) => id === 1234)).toBeUndefined();
+    });
+
+    test("mocks takes precedent over default mock resolvers", () => {
+      const testQuery = /* GraphQL */ `
+        query {
+          returnShape {
+            id
+            returnString
+          }
+        }
+      `;
+      const mocks = {
+        returnShape: {
+          returnString: "return string from mock",
+        },
+      };
+      const resp: any = ergonomock(schema, testQuery, {
+        mocks,
+        resolvers: {
+          Shape: () => ({
+            returnString: "return string from resolver",
+          }),
+        },
+      });
+      expect(resp.data.returnShape).toMatchObject({
+        id: expect.toBeString(),
+        returnString: "return string from mock",
+      });
+    });
+  });
 });

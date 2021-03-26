@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { render, cleanup } from "@testing-library/react";
+import { render, cleanup, screen } from "@testing-library/react";
 import { gql, useQuery } from "@apollo/client";
 import schema from "../../__tests__/schema";
 import MockedProvider from "../ErgonoMockedProvider";
@@ -18,6 +18,7 @@ const QUERY_A = gql`
       id
       returnInt
       returnString
+      returnCustomScalar
     }
   }
 `;
@@ -29,8 +30,10 @@ const ChildA = ({ shapeId }: { shapeId: string }): ReactElement => {
 
   return (
     <div>
-      Component ChildA. returnString: {data.queryShape.returnString} returnInt:{" "}
-      {data.queryShape.returnInt}{" "}
+      Component ChildA.
+      <p>returnString: {data.queryShape.returnString}</p>
+      <p>returnInt: {data.queryShape.returnInt}</p>
+      <p>returnCustomScalar: {data.queryShape.returnCustomScalar}</p>
     </div>
   );
 };
@@ -157,6 +160,39 @@ test("can mock the same operation multiple times with a function", async () => {
         returnInt: expect.toBeNumber()
       }
     }
+  });
+});
+
+test("it allows the user to provide default mock resolvers", async () => {
+  const spy = jest.fn();
+  render(
+    <MockedProvider
+      schema={schema}
+      onCall={spy}
+      resolvers={{
+        Shape: (_, args) => ({
+          returnString: `John Doe ${args.id}`,
+        }),
+      }}
+    >
+      <Parent shapeId="123" />
+    </MockedProvider>
+  );
+
+  expect(await screen.findByText(/returnString: John Doe 123/)).toBeVisible();
+  expect(await screen.findByText(/returnInt: -?[0-9]+/)).toBeVisible();
+  const { operation, response } = spy.mock.calls[0][0];
+  expect(spy).toHaveBeenCalledTimes(1);
+  expect(operation.operationName).toEqual("OperationA");
+  expect(operation.variables).toEqual({ shapeId: "123" });
+  expect(response).toMatchObject({
+    data: {
+      queryShape: {
+        __typename: "Shape",
+        returnString: "John Doe 123",
+        returnInt: expect.toBeNumber(),
+      },
+    },
   });
 });
 
