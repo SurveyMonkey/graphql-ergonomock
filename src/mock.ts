@@ -36,10 +36,15 @@ export type ErgonoMockShape = {
   [k: string]: ErgonoMockShape | ErgonoMockLeaf | Array<ErgonoMockShape | ErgonoMockLeaf>;
 };
 
+export type DefaultMockResolvers = {
+  [k: string]: GraphQLFieldResolver<any, any>
+};
+
 export type ErgonomockOptions = {
   mocks?: ErgonoMockShape;
   seed?: string;
   variables?: Record<string, any>;
+  resolvers?: DefaultMockResolvers;
 };
 
 export function ergonomock(
@@ -74,6 +79,13 @@ export function ergonomock(
 
   random.seed(seed);
 
+  const resolverOverrides: Map<string, GraphQLFieldResolver<any, any>> = new Map();
+  if (options.resolvers) {
+    Object.entries(options.resolvers).forEach(([type, resolver]) =>
+      resolverOverrides.set(type, resolver)
+    );
+  }
+
   const mockResolverFunction = function (
     type: GraphQLType,
     fieldName?: string
@@ -96,16 +108,6 @@ export function ergonomock(
         return root[fieldName];
       }
 
-      // Default mock for enums
-      if (fieldType instanceof GraphQLEnumType) {
-        return getRandomElement(fieldType.getValues()).value;
-      }
-
-      // Automock object types
-      if (isObjectType(fieldType)) {
-        return { __typename: fieldType.name };
-      }
-
       // Lists
       if (fieldType instanceof GraphQLList) {
         return random
@@ -122,6 +124,20 @@ export function ergonomock(
           { __typename: implementationType },
           mockResolverFunction(implementationType)(root, args, context, info)
         );
+      }
+
+      if (resolverOverrides.has(fieldType.name)) {
+        return resolverOverrides.get(fieldType.name)!(root, args, context, info);
+      }
+
+      // Default mock for enums
+      if (fieldType instanceof GraphQLEnumType) {
+        return getRandomElement(fieldType.getValues()).value;
+      }
+
+      // Automock object types
+      if (isObjectType(fieldType)) {
+        return { __typename: fieldType.name };
       }
 
       // Mock default scalars
