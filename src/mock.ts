@@ -19,7 +19,6 @@ import {
   validate,
   buildASTSchema,
 } from "graphql";
-
 import random from "./utils/random";
 import getRandomElement from "./utils/getRandomElement";
 import forEachFieldInQuery from "./utils/forEachFieldInQuery";
