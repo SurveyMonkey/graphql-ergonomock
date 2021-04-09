@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { render, cleanup } from "@testing-library/react";
+import { render, cleanup, screen } from "@testing-library/react";
 import { gql, useQuery } from "@apollo/client";
 import schema from "../../__tests__/schema";
 import MockedProvider from "../ErgonoMockedProvider";
@@ -129,8 +129,8 @@ test("can mock the same operation multiple times with a function", async () => {
       return {
         queryShape: {
           id: operation.variables.shapeId, // you need to return the ID to have separate cache entry
-          returnString: `John Doe ${operation.variables.shapeId}`
-        }
+          returnString: `John Doe ${operation.variables.shapeId}`,
+        },
       };
     }
   };
@@ -205,3 +205,28 @@ test("automocking is stable and deterministic per operation query, name and vari
   const { response: r2 } = spy2.mock.calls[0][0];
   expect(r1).not.toEqual(r2);
 });
+
+test.each([
+  [undefined, 'Shape'], // addTypename default to true
+  [true, "Shape"],
+  [false, undefined],
+])(
+  "it will return the correct value for __typename when addTypename is set to %s",
+  async (addTypename, expectedValue) => {
+    const spy = jest.fn();
+    render(
+      <MockedProvider schema={schema} onCall={spy} addTypename={addTypename}>
+        <Parent shapId="123" />
+      </MockedProvider>
+    );
+    await screen.findByText(/returnString/);
+    const {
+      response: {
+        data: {
+          queryShape: { __typename },
+        },
+      },
+    } = spy.mock.calls[0][0];
+    expect(__typename).toEqual(expectedValue);
+  }
+);
