@@ -2,6 +2,7 @@ import { buildSchemaFromTypeDefinitions } from "graphql-tools";
 
 const schemaSDL = /* GraphQL */ `
   scalar MissingMockType
+  scalar CustomScalarType
   interface Flying {
     id: ID!
     returnInt: Int
@@ -41,6 +42,7 @@ const schemaSDL = /* GraphQL */ `
     returnIDList: [ID]
     nestedShape: Shape
     nestedShapeList: [Shape]
+    returnCustomScalar: CustomScalarType
   }
   type RootQuery {
     returnInt: Int

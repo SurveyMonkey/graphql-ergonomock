@@ -1,16 +1,16 @@
 import React from "react";
+import { GraphQLSchema, DocumentNode } from "graphql";
 import {
   ApolloClient,
   DefaultOptions,
   ApolloCache,
-  Resolvers,
   ApolloLink,
   InMemoryCache,
   ApolloProvider,
   NormalizedCacheObject
 } from "@apollo/client";
 import MockLink, { ApolloErgonoMockMap, MockLinkCallHandler } from "./MockLink";
-import { GraphQLSchema, DocumentNode } from "graphql";
+import { DefaultMockResolvers } from '../mock';
 
 export interface ErgonoMockedProviderProps<TSerializedCache = {}> {
   schema: GraphQLSchema | DocumentNode;
@@ -19,7 +19,7 @@ export interface ErgonoMockedProviderProps<TSerializedCache = {}> {
   addTypename?: boolean;
   defaultOptions?: DefaultOptions;
   cache?: ApolloCache<TSerializedCache>;
-  resolvers?: Resolvers;
+  resolvers?: DefaultMockResolvers;
   children?: React.ReactElement;
   link?: ApolloLink;
 }
@@ -40,8 +40,7 @@ export default function ErgonoMockedProvider(props: ErgonoMockedProviderProps) {
     const c = new ApolloClient({
       cache: cache || new InMemoryCache({ addTypename }),
       defaultOptions,
-      link: link || new MockLink(schema, mocks || {}, { addTypename, onCall }),
-      resolvers
+      link: link || new MockLink(schema, mocks || {}, { addTypename, onCall, resolvers }),
     });
     setClient(c);
     return () => client && ((client as unknown) as ApolloClient<any>).stop();

@@ -344,6 +344,56 @@ const mocks = {
 </p></details>
 
 
+#### Providing default mock resolver functions
+
+If you have custom scalar types or would like to provide default mock resolver functions for certain types, you can pass your mock functions via the `resolvers` option.
+
+<details>
+<summary>See example</summary><p>
+
+```js
+const schema = gql`
+  type Shape = {
+    id: ID!
+    returnInt: Int
+    date: Date
+    nestedShape: Shape
+  }
+
+  type Query {
+    getShape: Shape
+  }
+`;
+
+const testQuery = gql`
+{
+  getShape {
+    id
+    returnInt
+    date
+    nestedShape {
+      date
+    }
+  }
+}
+`;
+
+const resp = ergonomock(schema, testQuery, {
+  resolvers: {
+    Date: () => "2021-04-09"
+  }
+});
+expect(resp.data).toMatchObject({
+  id: expect.toBeString(),
+  returnInt: expect.toBeNumber(),
+  date: '2021-04-09'
+  nestedShape {
+    date: '2021-04-09'
+  }
+});
+```
+</p></details>
+
 #### Mocking Errors
 
 You can return or throw errors within the mock shape.
@@ -431,6 +481,7 @@ This component's props are very similar to Apollo-Client's [MockedProvider](http
 
 - `mocks` is an object where keys are the operation names and the values are the `mocks` input that `ergonomock()` would accept. (i.e. could be empty, or any shape that matches the expected response.)
 - `onCall` is a handler that gets called by any executed query. The call signature is `({operation: GraphQLOperation, response: any}) => void` where response is the full response being returned to that single query. The purpose of `onCall` is to provide some sort of spy (or `jest.fn()`) to make assertions on which calls went through, with which variables, and get a handle on the generated values from `ergonomock()`.
+- `resolvers` is an object where the keys are the `gql` type and the values are the mock resolver functions. It's designed to allow users to override or provide a default mock function for certain types. (e.g. custom scalar types) The call signature is `(root, args, context, info) => any`.
 
 <!-- ROADMAP -->
 ## Roadmap
