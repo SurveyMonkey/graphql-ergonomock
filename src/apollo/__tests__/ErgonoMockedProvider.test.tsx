@@ -38,10 +38,10 @@ const ChildA = ({ shapeId }: { shapeId: string }): ReactElement => {
   );
 };
 
-const MutiQueries = ({ shapeIdOne, shapeIdTwo }): ReactElement => {
+const MutiQueries = (): ReactElement => {
   const queryOne = gql`
-    query QueryOne($shapeId: String) {
-      queryShape(id: $shapeId) {
+    query QueryOne {
+      returnShape {
         id
         returnString
       }
@@ -49,22 +49,16 @@ const MutiQueries = ({ shapeIdOne, shapeIdTwo }): ReactElement => {
   `;
 
   const queryTwo = gql`
-    query QueryTwo($shapeId: String) {
-      queryShape(id: $shapeId) {
+    query QueryTwo {
+      returnShape {
         id
         returnInt
       }
     }
   `;
 
-  const { loading, error, data } = useQuery(queryOne, {
-    variables: { shapeId: shapeIdOne },
-    // fetchPolicy: "no-cache",
-  });
-  const { loading: loadingTwo, error: errorTwo, data: dataTwo } = useQuery(queryTwo, {
-    variables: { shapeId: shapeIdOne },
-    // fetchPolicy: "no-cache",
-  });
+  const { loading, error, data } = useQuery(queryOne);
+  const { loading: loadingTwo, error: errorTwo, data: dataTwo } = useQuery(queryTwo);
 
   const client = useApolloClient();
 
@@ -74,6 +68,7 @@ const MutiQueries = ({ shapeIdOne, shapeIdTwo }): ReactElement => {
   if (error || errorTwo) {
     return <p>Error</p>;
   }
+
   console.log(client.extract());
   return (
     <div>
@@ -316,20 +311,18 @@ test.only("can mock components with multiple queries", async () => {
   const mocks = {
     QueryOne: {
       queryShape: {
-        id: "123456",
         returnString: "John Doe",
       },
     },
     QueryTwo: {
       queryShape: {
-        id: "678910",
         returnInt: 5,
       },
     },
   };
   const { findByText } = render(
     <MockedProvider schema={schema} mocks={mocks}>
-      <MutiQueries shapeIdOne={"123456"} shapeIdTwo={"678910"} />
+      <MutiQueries />
     </MockedProvider>
   );
   expect(await findByText(/String: John Doe/)).toBeVisible();
