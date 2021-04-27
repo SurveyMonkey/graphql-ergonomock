@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { render, cleanup, screen } from "@testing-library/react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, InMemoryCache, useApolloClient, useQuery } from "@apollo/client";
 import schema from "../../__tests__/schema";
 import MockedProvider from "../ErgonoMockedProvider";
 
@@ -38,6 +38,51 @@ const ChildA = ({ shapeId }: { shapeId: string }): ReactElement => {
   );
 };
 
+const MutiQueries = ({ shapeIdOne, shapeIdTwo }): ReactElement => {
+  const queryOne = gql`
+    query QueryOne($shapeId: String) {
+      queryShape(id: $shapeId) {
+        id
+        returnString
+      }
+    }
+  `;
+
+  const queryTwo = gql`
+    query QueryTwo($shapeId: String) {
+      queryShape(id: $shapeId) {
+        id
+        returnInt
+      }
+    }
+  `;
+
+  const { loading, error, data } = useQuery(queryOne, {
+    variables: { shapeId: shapeIdOne },
+    // fetchPolicy: "no-cache",
+  });
+  const { loading: loadingTwo, error: errorTwo, data: dataTwo } = useQuery(queryTwo, {
+    variables: { shapeId: shapeIdOne },
+    // fetchPolicy: "no-cache",
+  });
+
+  const client = useApolloClient();
+
+  if (loading || loadingTwo) {
+    return <p>Loaidng</p>;
+  }
+  if (error || errorTwo) {
+    return <p>Error</p>;
+  }
+  console.log(client.extract());
+  return (
+    <div>
+      <div>String: {data.queryShape.returnString}</div>
+      <div>Int: {dataTwo.queryShape.returnInt}</div>
+    </div>
+  );
+};
+
 test("Can render a nested tree of components with appropriate mocking", async () => {
   const spy = jest.fn();
   const { findByText } = render(
@@ -55,9 +100,9 @@ test("Can render a nested tree of components with appropriate mocking", async ()
     data: {
       queryShape: {
         returnString: expect.toBeString(),
-        returnInt: expect.toBeNumber()
-      }
-    }
+        returnInt: expect.toBeNumber(),
+      },
+    },
   });
 });
 
@@ -66,9 +111,9 @@ test("can accept mocks per operation name", async () => {
   const mocks = {
     OperationA: {
       queryShape: {
-        returnString: "John Doe"
-      }
-    }
+        returnString: "John Doe",
+      },
+    },
   };
   const { findByText } = render(
     <MockedProvider schema={schema} onCall={spy} mocks={mocks}>
@@ -85,9 +130,9 @@ test("can accept mocks per operation name", async () => {
     data: {
       queryShape: {
         returnString: "John Doe",
-        returnInt: expect.toBeNumber()
-      }
-    }
+        returnInt: expect.toBeNumber(),
+      },
+    },
   });
 });
 
@@ -96,9 +141,9 @@ test("can mock the same operation multiple times in the same tree", async () => 
   const mocks = {
     OperationA: {
       queryShape: {
-        returnString: "John Doe"
-      }
-    }
+        returnString: "John Doe",
+      },
+    },
   };
   const { findAllByText } = render(
     <MockedProvider schema={schema} onCall={spy} mocks={mocks}>
@@ -119,23 +164,23 @@ test("can mock the same operation multiple times in the same tree", async () => 
     data: {
       queryShape: {
         returnString: "John Doe",
-        returnInt: expect.toBeNumber()
-      }
-    }
+        returnInt: expect.toBeNumber(),
+      },
+    },
   });
 });
 
 test("can mock the same operation multiple times with a function", async () => {
   const spy = jest.fn();
   const mocks = {
-    OperationA: operation => {
+    OperationA: (operation) => {
       return {
         queryShape: {
           id: operation.variables.shapeId, // you need to return the ID to have separate cache entry
           returnString: `John Doe ${operation.variables.shapeId}`,
         },
       };
-    }
+    },
   };
   const { findAllByText } = render(
     <MockedProvider schema={schema} onCall={spy} mocks={mocks}>
@@ -157,9 +202,9 @@ test("can mock the same operation multiple times with a function", async () => {
     data: {
       queryShape: {
         returnString: "John Doe 123",
-        returnInt: expect.toBeNumber()
-      }
-    }
+        returnInt: expect.toBeNumber(),
+      },
+    },
   });
 });
 
@@ -243,7 +288,7 @@ test("automocking is stable and deterministic per operation query, name and vari
 });
 
 test.each([
-  [undefined, 'Shape'], // addTypename default to true
+  [undefined, "Shape"], // addTypename default to true
   [true, "Shape"],
   [false, undefined],
 ])(
@@ -266,3 +311,27 @@ test.each([
     expect(__typename).toEqual(expectedValue);
   }
 );
+
+test.only("can mock components with multiple queries", async () => {
+  const mocks = {
+    QueryOne: {
+      queryShape: {
+        id: "123456",
+        returnString: "John Doe",
+      },
+    },
+    QueryTwo: {
+      queryShape: {
+        id: "678910",
+        returnInt: 5,
+      },
+    },
+  };
+  const { findByText } = render(
+    <MockedProvider schema={schema} mocks={mocks}>
+      <MutiQueries shapeIdOne={"123456"} shapeIdTwo={"678910"} />
+    </MockedProvider>
+  );
+  expect(await findByText(/String: John Doe/)).toBeVisible();
+  expect(await findByText(/Int: 5/)).toBeVisible();
+});
