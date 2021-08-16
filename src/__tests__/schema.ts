@@ -1,4 +1,4 @@
-import { buildSchemaFromTypeDefinitions } from "graphql-tools";
+import { buildSchema } from "graphql";
 
 const schemaSDL = /* GraphQL */ `
   scalar MissingMockType
@@ -89,6 +89,6 @@ const schemaSDL = /* GraphQL */ `
   }
 `;
 
-const schema = buildSchemaFromTypeDefinitions(schemaSDL);
+const schema = buildSchema(schemaSDL);
 
 export default schema;
