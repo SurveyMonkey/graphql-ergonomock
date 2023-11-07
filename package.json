@@ -36,7 +36,7 @@
     "@testing-library/react": "11.2.7",
     "@types/react": "17.0.18",
     "@types/react-dom": "17.0.9",
-    "@types/seedrandom": "3.0.1",
+    "@types/seedrandom": "3.0.8",
     "jest": "26.6.3",
     "jest-extended": "0.11.5",
     "prettier": "2.3.2",
